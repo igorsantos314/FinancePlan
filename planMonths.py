@@ -327,8 +327,15 @@ class months(Frame):
 
     def createMonthlyReport(self):
 
-        #CRIAR CSV
-        self.bancoDados.createCSV(self.currentMonth, self.currentYear)
+        try:
+            #CRIAR CSV
+            self.bancoDados.createCSV(self.currentMonth, self.currentYear)
+
+            #MENSAGEM DE SUCESSO
+            messagebox.showinfo('SUCESSO', f'RELATÓRIO MENSAL DE {self.currentMonth}/{self.currentYear} CRIADO!')
+
+        except:
+            messagebox.showerror('', 'OCORREU UM ERRO :(')
 
 if __name__ == "__main__":
     m = months()
