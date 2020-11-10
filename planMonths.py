@@ -47,13 +47,20 @@ class months(Frame):
         fileMenuFile = Menu(myMenu)
         fileMenuFile.add_command(label='New Spending', command=self.insertDespesa)
         fileMenuFile.add_command(label='New Revenue', command='')
+
+        fileMenuFile.add_separator()
+        fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
+
         #fileMenuFile.add_command(label='VALOR', command='lambda: self.windowChangeValor(self.getBarCode(self.listbox.get(ACTIVE)))')
 
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
         #FILE MENU DE CAIXAS
         fileMenuBox = Menu(myMenu)
-        fileMenuBox.add_command(label='Cash Deposit', command='')
+        fileMenuBox.add_command(label='Cash Deposit BOX T', command='')
+        fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
+        fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
+        fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
         fileMenuBox.add_command(label='Edit Box', command='')
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
@@ -62,12 +69,11 @@ class months(Frame):
         fileMenuTap = Menu(myMenu)
         fileMenuTap.add_command(label='Edit Name', command='')
         fileMenuTap.add_command(label='Edit Value', command='')
-        fileMenuTap.add_command(label='Edit Status', command='')
+        fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
 
         fileMenuTap.add_separator()
 
         fileMenuTap.add_command(label='Del Tap', command='')
-
         menubar.add_cascade(label="Taps", menu=fileMenuTap)
 
         #SETAR TITULO DA JANELA PRINCIPAL
@@ -116,7 +122,6 @@ class months(Frame):
         elif l == 'F8':
             #AVANÇA UM MES
             self.nextMonth()
-
     
     def setTitleWindowMain(self):
         #DEFINE O TITULO
@@ -167,7 +172,7 @@ class months(Frame):
         lblGastos = Label(text='BOX T', font=self.fontDefault)
         lblGastos.grid(column=1, row=1, pady=5, padx=10)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='LemonChiffon')
+        self.listboxBox = Listbox(self.windowMain, height=20, width=35, font= self.fontDefault, bg='LemonChiffon')
         self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
         #INSERIR CABEÇALHO
@@ -214,6 +219,18 @@ class months(Frame):
         space = ' ' * 24
 
         self.listboxtTaps.insert("end", F' TOTAL: {space} R${total}')
+
+    def updateStatus(self):
+
+        indice = self.listboxtTaps.curselection()[0]
+        id = int(self.listboxtTaps.get(indice).split(" ")[0])
+
+        
+        #ATUALIZAR O STATUS        
+        self.bancoDados.updateStatus(self.currentMonth, id)
+
+        #ATUALIZAR LISTBOX
+        self.insertSpendingListBox()
 
     def insertDespesa(self):
 
@@ -306,7 +323,12 @@ class months(Frame):
         btSave = Button(self.windowDespesa, text='SALVAR', bg='MediumSpringGreen', command=save)
         btSave.place(x=170, y=140)
 
-        self.windowDespesa.mainloop()
-    
+        self.windowDespesa.mainloop() 
+
+    def createMonthlyReport(self):
+
+        #CRIAR CSV
+        self.bancoDados.createCSV(self.currentMonth, self.currentYear)
+
 if __name__ == "__main__":
     m = months()

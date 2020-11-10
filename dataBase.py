@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import csv
 
 class bd:
 
@@ -79,6 +80,29 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    def updateStatus(self, m, id):
+        #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA  
+        show = f"SELECT status FROM {self.getNameMonth(m)} WHERE ID = '{id}'"
+        
+        self.cur.execute(show)
+        item = self.cur.fetchall()
+
+        status = 'PG'
+
+        #CASO ENCONTRE ALGUM ID
+        if len(item) != 0:
+            
+            #FAZ UM SWAP
+            if item[0][0] == 'PG':
+                status = '--'
+
+        show = F'UPDATE {self.getNameMonth(m)} SET status = "{status}" WHERE id= "{id}"'
+        print(show)
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
+
     def resetDataBase(self):
         
         for m in range(13):
@@ -92,7 +116,30 @@ class bd:
             for i in valores:
                 self.dropDespesa(m, i[0])
 
+    def createCSV(self, m, y):
+
+        with open(F'Relatorio_Mensal_{m}-{y}.csv', 'w', newline='') as file:
+            #CRIAR O OBJETO
+            writer = csv.writer(file)
+            
+            #CRIAR TUPLA DE INFORMAÇÕES
+            writer.writerow(["ID", "Mes", "Ano", "Item", "Valor", "Status"])
+
+            #VARRER LISTA DE GASTOS
+            lGastos = self.getListaGastosMes(m, y)
+
+            for i in lGastos:
+                writer.writerow([i[0], self.getNameMonth(m), i[1], i[2], i[3], i[4]])       
+
+            #VALOR TOTAL DO MÊS
+            total = self.getGastosMes(m, y)
+
+            #ESCREVER A ULTIMA LINHA COM O TOTAL DO MES
+            writer.writerow(['', '', '', 'TOTAL', total, ''])
+
 a = bd()
+#a.createCSV(11, 2020)
+#a.updateStatus(11, 1)
 #for i in a.months:
 #    a.createTablesMonths(i)
 #b.resetDataBase()
