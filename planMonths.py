@@ -91,11 +91,8 @@ class months(Frame):
         #CREATE LISTBOX DAS CAIXAS E S F
         #self.setListBoxESF()
 
-        #INCIALIZAR O LISTBOX DE GASTOS
-        self.insertSpendingListBox()
-
-        #INCIALIZA O LISTBOX DE RECEITAS
-        self.insertTapsListBox()
+        #INICIALIZA AS TABELAS
+        self.refreshTables()
 
         #TECLAS DE FUNCOES
         self.windowMain.bind("<F1>", self.keyPressed)
@@ -149,11 +146,8 @@ class months(Frame):
         #ATUALIZA OS VALORES E O TITULO DA JANELA
         self.setTitleWindowMain()
 
-        #ATUALIZA A LISTA DE GASTOS
-        self.insertSpendingListBox()
-
-        #ATUALIZA LISTA DA RECEITA
-        self.insertTapsListBox()
+        #ATUALIZA AS TABELAS
+        self.refreshTables()
 
     def prevMonth(self):
 
@@ -168,6 +162,10 @@ class months(Frame):
         #ATUALIZA OS VALORES E O TITULO DA JANELA
         self.setTitleWindowMain()
 
+        #ATUALIZA AS TABELAS
+        self.refreshTables()
+
+    def refreshTables(self):
         #ATUALIZA A LISTA DE GASTOS
         self.insertSpendingListBox()
 
@@ -179,7 +177,7 @@ class months(Frame):
         lblGastos = Label(text='WATER TAP', font=self.fontDefault)
         lblGastos.grid(column=0, row=1, pady=5, padx=10)
 
-        self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='LemonChiffon')
+        self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='red', fg='white')
         self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
 
     def setListBoxT(self):
@@ -187,7 +185,7 @@ class months(Frame):
         lblReceita = Label(text='BOX T', font=self.fontDefault)
         lblReceita.grid(column=1, row=1, pady=5, padx=10)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='LemonChiffon')
+        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='green', fg='white')
         self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
     """def setListBoxESF(self):
@@ -328,8 +326,11 @@ class months(Frame):
         lblDespesa = Label(self.windowDespesa, text='Despesa:')
         lblDespesa.place(x=20, y=70)
 
-        etNomeDespesa = Entry(self.windowDespesa, width=16)
-        etNomeDespesa.place(x=20, y=90)
+        comboDespesa = ttk.Combobox(self.windowDespesa, width=12) 
+
+        comboDespesa['values'] = tuple(['ALIMENTAÇÃO', 'COMBUSTIVEL', 'CARTÃO -', 'SAUDE', 'OUTROS'])
+        comboDespesa.current(0)
+        comboDespesa.place(x=20, y=90)
 
         #VALOR
         lblValor = Label(self.windowDespesa, text='Valor:')
@@ -357,8 +358,8 @@ class months(Frame):
                 #INFORMAÇẼOS DA COMPRA
                 mes = int(comboMes.get())
                 ano = int(comboAno.get())
-                item  = etNomeDespesa.get().upper()[:24]
-                valor = float(etValor.get())
+                item  = comboDespesa.get().upper()[:24]
+                valor = -float(etValor.get())
 
                 #ADICIONAR O MESMO VALOR EM VÁRIOS MESES
                 for i in range(iteracoes):
@@ -370,7 +371,7 @@ class months(Frame):
 
                     #CASO SEJA PARCELADO
                     if iteracoes > 1:
-                        item = F'{etNomeDespesa.get().upper()} {i+1}/{iteracoes}'
+                        item = F'{comboDespesa.get().upper()} {i+1}/{iteracoes}'
 
                     #ADICIONAR NA BASE DE DADOS
                     self.bancoDados.insertItem(mes, ano, item, valor, '--')
@@ -380,6 +381,9 @@ class months(Frame):
 
                 #MENSAGEM DE SUCESSO
                 messagebox.showinfo('', 'Adicionado Com Sucesso !')
+
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
 
             except:
                 messagebox.showerror('', 'Ocorreu um Erro !')

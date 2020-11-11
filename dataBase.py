@@ -257,7 +257,7 @@ class bd:
             #PULA UMA LINHA
             writer.writerow(['', '', '', '', '', ''])
 
-            valorRestante = totalBoxT - total
+            valorRestante = totalBoxT + total
 
             #PULA UMA LINHA
             writer.writerow(['', '', '', 'SALDO RESTANTE: ', valorRestante, ''])
@@ -276,4 +276,4 @@ a = bd()
 #a.updateStatus(11, 1)
 #for i in a.months:
 #    a.createTablesMonths(i)
-#b.resetDataBase()
+#a.resetDataBase()
