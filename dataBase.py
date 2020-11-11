@@ -176,7 +176,7 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
-    def updateStatus(self, m, id):
+    def updateStatusSpending(self, m, id):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA  
         show = f"SELECT status FROM {self.getNameMonth(m)} WHERE ID = '{id}'"
@@ -195,6 +195,24 @@ class bd:
 
         show = F'UPDATE {self.getNameMonth(m)} SET status = "{status}" WHERE id= "{id}"'
         #print(show)
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
+    
+    def updateNameSpending(self, m, id, Item):
+
+        #ATUALIZA O NOME DO GASTO
+        show = F'UPDATE {self.getNameMonth(m)} SET Item = "{Item}" WHERE id= "{id}"'
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
+
+    def updateValorSpending(self, m, id, valor):
+
+        #ATUALIZA O NOME DO GASTO
+        show = F'UPDATE {self.getNameMonth(m)} SET valor = {valor} WHERE id= "{id}"'
         self.cur.execute(show)
 
         #CONSOLIDAR BASE DE DADOS
@@ -262,10 +280,28 @@ class bd:
             #PULA UMA LINHA
             writer.writerow(['', '', '', 'SALDO RESTANTE: ', valorRestante, ''])
 
+    def dropSpending(self, m, id):
+        #EXCLUIR GASTO
+        command = F'DELETE FROM {self.getNameMonth(m)} WHERE id = {id}'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
+    def dropReceive(self, m, id):
+        #EXCLUIR RECEITA
+        command = F'DELETE FROM BOXT WHERE id = {id} AND mes = "{m}"'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
 a = bd()
+#a.dropReceive(11, 0)
+#a.dropSpending(11, 0)
+#a.updateValorSpending(11, 0, -150)
+#a.updateNameSpending(11, 0, 'VISEIRA MOTO')
 #print(a.getListBoxTCurrent(11, 2020))
 #a.insertBoxT(11, 2020, 'PROJETO', 250, '--')
-#a.insertBoxT(11, 2020, 'PROJETO', 250, '--')
+#a.insertBoxT(11, 2020, 'PROJETO DE EXTENSAO', 250, '--')
 #a.insertBox('F', '10/11/2020', 'POUP.', 12000)
 #a.insertBox('S', '10/11/2020', 'POUP.', 12000)
 #print(a.getSumBox('T'))

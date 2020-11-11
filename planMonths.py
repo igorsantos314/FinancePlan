@@ -35,9 +35,10 @@ class months(Frame):
     def windowSpending(self):
 
         self.windowMain = Tk()
-        self.windowMain.geometry('995x450+10+10')
+        self.windowMain.geometry('995x500+10+10')
         self.windowMain.resizable(False, False)
         self.windowMain.title('FINANCE')
+        self.windowMain['bg'] = 'black'
 
         #BARRA DE FUNÇÕES
         menubar = Menu(self.windowMain)
@@ -61,7 +62,10 @@ class months(Frame):
         fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
-        fileMenuBox.add_command(label='Edit Box', command='')
+
+        fileMenuBox.add_separator()
+
+        fileMenuBox.add_command(label='Del Receive', command='')
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
 
@@ -73,11 +77,11 @@ class months(Frame):
 
         fileMenuTap.add_separator()
 
-        fileMenuTap.add_command(label='Del Tap', command='')
+        fileMenuTap.add_command(label='Del Tap', command=self.deleteSpending)
         menubar.add_cascade(label="Taps", menu=fileMenuTap)
 
         #SETAR TITULO DA JANELA PRINCIPAL
-        self.lblTitle = Label(text='', font=self.fontStyleUpper)
+        self.lblTitle = Label(text='', font=self.fontStyleUpper, bg='black', fg='white')
         self.lblTitle.grid(column=0, row=0, pady=5, padx=10)
         
         self.setTitleWindowMain()
@@ -131,7 +135,7 @@ class months(Frame):
     
     def setTitleWindowMain(self):
         #DEFINE O TITULO
-        self.lblTitle['text'] = f'MY FINANCES - {self.currentMonth}/{self.currentYear}'
+        self.lblTitle['text'] = f'{self.bancoDados.getNameMonth(self.currentMonth)} de {self.currentYear}'
 
     def nextMonth(self):
             
@@ -174,28 +178,19 @@ class months(Frame):
 
     def setListBoxSpending(self):
         #LABEL DE GASTOS
-        lblGastos = Label(text='WATER TAP', font=self.fontDefault)
+        lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg='cyan')
         lblGastos.grid(column=0, row=1, pady=5, padx=10)
 
-        self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='red', fg='white')
+        self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='black', fg='cyan')
         self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
 
     def setListBoxT(self):
         #LABEL DE RECEITA DO MES
-        lblReceita = Label(text='BOX T', font=self.fontDefault)
+        lblReceita = Label(text='BOX T', font=self.fontStyleUpper, bg='black', fg='SpringGreen')
         lblReceita.grid(column=1, row=1, pady=5, padx=10)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='green', fg='white')
+        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='black', fg='SpringGreen')
         self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
-
-    """def setListBoxESF(self):
-
-        #LABEL DAS CAIXAS
-        lblReceita = Label(text='BOX E/S/F', font=self.fontDefault)
-        lblReceita.grid(column=1, row=3, pady=5, padx=10)
-
-        self.listboxBox = Listbox(self.windowMain, height=12, width=45, font= self.fontDefault, bg='LemonChiffon')
-        self.listboxBox.grid(column=1, row=4, pady=5, padx=5)"""
 
     def insertTapsListBox(self, m=None, y=None):
 
@@ -287,7 +282,7 @@ class months(Frame):
             id = int(self.listboxtTaps.get(indice).split(" ")[0])
             
             #ATUALIZAR O STATUS        
-            self.bancoDados.updateStatus(self.currentMonth, id)
+            self.bancoDados.updateStatusSpending(self.currentMonth, id)
 
             #ATUALIZAR LISTBOX
             self.insertSpendingListBox()
@@ -358,7 +353,7 @@ class months(Frame):
                 #INFORMAÇẼOS DA COMPRA
                 mes = int(comboMes.get())
                 ano = int(comboAno.get())
-                item  = comboDespesa.get().upper()[:24]
+                item  = comboDespesa.get().upper()[:20]
                 valor = -float(etValor.get())
 
                 #ADICIONAR O MESMO VALOR EM VÁRIOS MESES
@@ -394,6 +389,40 @@ class months(Frame):
 
         self.windowDespesa.mainloop() 
 
+    # ----------------------- SETOR DE EXCLUSÃO -----------------------
+    def deleteSpending(self):
+        
+        try:
+            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+            indice = self.listboxtTaps.curselection()[0]
+            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            
+            if messagebox.askquestion('', F'Delete Spending ID: {id} ?'):
+                
+                #DELETA O ITEM SELECIONADO    
+                self.bancoDados.dropSpending(self.currentMonth, id)
+
+                #ATUALIZAR LISTBOX
+                self.insertSpendingListBox()
+
+        except:
+            pass
+
+    def deleteReceive(self, m, id):
+        
+        #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+        indice = self.listboxBox.curselection()[0]
+        id = int(self.listboxBox.get(indice).split(" ")[0])
+        
+        if messagebox.askquestion('', F'Delete Receive ID: {id} ?'):
+            
+            #DELETA O ITEM SELECIONADO    
+            self.bancoDados.dropReceive(self.currentMonth, id)
+
+            #ATUALIZAR LISTBOX
+            self.insertTapsListBox()                
+    
+    # ----------------------- SETOR DE CRIAÇÃO DE RALATORIOS -----------------------
     def createMonthlyReport(self):
 
         try:
