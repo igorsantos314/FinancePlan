@@ -35,7 +35,7 @@ class months(Frame):
     def windowSpending(self):
 
         self.windowMain = Tk()
-        self.windowMain.geometry('1100x450+10+10')
+        self.windowMain.geometry('995x450+10+10')
         self.windowMain.resizable(False, False)
         self.windowMain.title('FINANCE')
 
@@ -85,11 +85,17 @@ class months(Frame):
         #CREATE LISTBOX TORNEIRAS
         self.setListBoxSpending()
 
-        #CREATE LISTBOX DAS CAIXAS
-        self.setListBoxBox()
+        #CREATE LISTBOX DA CAIXA T
+        self.setListBoxT()
 
-        #INCIALIZAR O LISTBOX
+        #CREATE LISTBOX DAS CAIXAS E S F
+        #self.setListBoxESF()
+
+        #INCIALIZAR O LISTBOX DE GASTOS
         self.insertSpendingListBox()
+
+        #INCIALIZA O LISTBOX DE RECEITAS
+        self.insertTapsListBox()
 
         #TECLAS DE FUNCOES
         self.windowMain.bind("<F1>", self.keyPressed)
@@ -114,6 +120,9 @@ class months(Frame):
         elif l == 'F5':
             #ATUALIZA A LISTA DE GASTOS
             self.insertSpendingListBox()
+
+            #ATUALIZA LISTA DA RECEITA
+            self.insertTapsListBox()
 
         elif l == 'F6':
             #VOLTA UM MES
@@ -143,6 +152,9 @@ class months(Frame):
         #ATUALIZA A LISTA DE GASTOS
         self.insertSpendingListBox()
 
+        #ATUALIZA LISTA DA RECEITA
+        self.insertTapsListBox()
+
     def prevMonth(self):
 
         #VERIFICA SE ESTA EM JANEIRO E VOLTA UM ANO ATRAS
@@ -159,6 +171,9 @@ class months(Frame):
         #ATUALIZA A LISTA DE GASTOS
         self.insertSpendingListBox()
 
+        #ATUALIZA LISTA DA RECEITA
+        self.insertTapsListBox()
+
     def setListBoxSpending(self):
         #LABEL DE GASTOS
         lblGastos = Label(text='WATER TAP', font=self.fontDefault)
@@ -167,17 +182,64 @@ class months(Frame):
         self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='LemonChiffon')
         self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
 
-    def setListBoxBox(self):
-        #LABEL DE GASTOS
-        lblGastos = Label(text='BOX T', font=self.fontDefault)
-        lblGastos.grid(column=1, row=1, pady=5, padx=10)
+    def setListBoxT(self):
+        #LABEL DE RECEITA DO MES
+        lblReceita = Label(text='BOX T', font=self.fontDefault)
+        lblReceita.grid(column=1, row=1, pady=5, padx=10)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=35, font= self.fontDefault, bg='LemonChiffon')
+        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='LemonChiffon')
         self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
+    """def setListBoxESF(self):
+
+        #LABEL DAS CAIXAS
+        lblReceita = Label(text='BOX E/S/F', font=self.fontDefault)
+        lblReceita.grid(column=1, row=3, pady=5, padx=10)
+
+        self.listboxBox = Listbox(self.windowMain, height=12, width=45, font= self.fontDefault, bg='LemonChiffon')
+        self.listboxBox.grid(column=1, row=4, pady=5, padx=5)"""
+
+    def insertTapsListBox(self, m=None, y=None):
+
+        #INCIALIZADOR PADRÃO
+        if m is None:
+            m = self.currentMonth
+            y = self.currentYear
+
+        #LIMPAR LISTBOX
+        self.listboxBox.delete(0,'end')
+
         #INSERIR CABEÇALHO
-        self.listboxBox.insert("end", 'CODE    NAME             VALUE')
-        self.listboxBox.insert("end", '----------------------------------')
+        self.listboxBox.insert("end", 'CODE    NAME              VALUE     STATUS')
+        self.listboxBox.insert("end", '-------------------------------------------')
+
+        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
+        listBotT = self.bancoDados.getListBoxTCurrent(m, y)
+
+        for i in listBotT:
+
+            #FORMATAÇÃO DOS DADOS
+            id = "{}".format(i[0])
+            id = "{}{}".format(i[0], " " * (8 - len(id)))
+
+            nome = "{}{}".format(i[3], " " * (18 - len(i[3])))
+
+            valor = "{}".format(i[4])
+            valor = "R${}{}".format(valor, " " * (8 - len(valor)))
+
+            statusPag = "{}{}".format(i[5], " " * (12 - len(i[5])))
+
+            #INSERIR A TUPLA NO FINAL DO LISTBOX
+            self.listboxBox.insert("end", F'{id}{nome}{valor}{statusPag}')
+
+        #SOMA DAS RECEITAS DO MES
+        total = self.bancoDados.getSumBoxT(m, y)
+
+        #INSERIR DESPESAS NO LISTBOX
+        self.listboxBox.insert("end", '-------------------------------------------')
+        space = ' ' * 10
+
+        self.listboxBox.insert("end", F'        TOTAL: {space} R${total}')
 
     def insertSpendingListBox(self, m=None, y=None):
 
@@ -222,15 +284,18 @@ class months(Frame):
 
     def updateStatus(self):
 
-        indice = self.listboxtTaps.curselection()[0]
-        id = int(self.listboxtTaps.get(indice).split(" ")[0])
+        try:
+            indice = self.listboxtTaps.curselection()[0]
+            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            
+            #ATUALIZAR O STATUS        
+            self.bancoDados.updateStatus(self.currentMonth, id)
 
-        
-        #ATUALIZAR O STATUS        
-        self.bancoDados.updateStatus(self.currentMonth, id)
+            #ATUALIZAR LISTBOX
+            self.insertSpendingListBox()
 
-        #ATUALIZAR LISTBOX
-        self.insertSpendingListBox()
+        except:
+            pass
 
     def insertDespesa(self):
 
@@ -260,7 +325,7 @@ class months(Frame):
         comboAno.place(x=170, y=40)
 
         #DESPESA
-        lblDespesa = Label(self.windowDespesa, text='Tipo de Despesa:')
+        lblDespesa = Label(self.windowDespesa, text='Despesa:')
         lblDespesa.place(x=20, y=70)
 
         etNomeDespesa = Entry(self.windowDespesa, width=16)
