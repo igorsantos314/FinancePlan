@@ -18,7 +18,11 @@ class months(Frame):
         self.gold= 'PaleGoldenrod'
         self.azulClaro = 'PowderBlue'
         self.fontDefault = 'Courier 12'
-        self.fontTad = 'Monaco 10 bold'
+        self.fontTad = 'Courier 12 bold'
+
+        #MENU
+        self.bgMenu = 'Black'
+        self.fgMenu = 'SpringGreen'
 
         #DATA ATUAL
         self.day = date.today().day
@@ -41,11 +45,11 @@ class months(Frame):
         self.windowMain['bg'] = 'black'
 
         #BARRA DE FUNÇÕES
-        menubar = Menu(self.windowMain)
+        menubar = Menu(self.windowMain, bg=self.bgMenu, fg='White', font=self.fontDefault)
         myMenu = Menu(menubar, tearoff=0)
 
-        #Menu de vendedores
-        fileMenuFile = Menu(myMenu)
+        #MENU FILE
+        fileMenuFile = Menu(myMenu, bg=self.bgMenu, fg='White', font=self.fontDefault)
         fileMenuFile.add_command(label='New Spending', command=self.insertDespesa)
         fileMenuFile.add_command(label='New Revenue', command='')
 
@@ -53,13 +57,21 @@ class months(Frame):
         fileMenuFile.add_command(label='View Log', command='')
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
 
-        #fileMenuFile.add_command(label='VALOR', command='lambda: self.windowChangeValor(self.getBarCode(self.listbox.get(ACTIVE)))')
-
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
+        #FILE MENU DE TORNEIRAS
+        fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg='Cyan', font=self.fontDefault)
+        fileMenuTap.add_command(label='Edit Name', command='')
+        fileMenuTap.add_command(label='Edit Value', command='')
+        fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
+
+        fileMenuTap.add_separator()
+
+        fileMenuTap.add_command(label='Del Tap', command=self.deleteSpending)
+        menubar.add_cascade(label="Taps", menu=fileMenuTap)
+
         #FILE MENU DE CAIXAS
-        fileMenuBox = Menu(myMenu)
-        fileMenuBox.add_command(label='Cash Deposit BOX T', command='')
+        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.fgMenu, font=self.fontDefault)
         fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
@@ -70,20 +82,9 @@ class months(Frame):
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
 
-        #FILE MENU DE TORNEIRAS
-        fileMenuTap = Menu(myMenu)
-        fileMenuTap.add_command(label='Edit Name', command='')
-        fileMenuTap.add_command(label='Edit Value', command='')
-        fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
-
-        fileMenuTap.add_separator()
-
-        fileMenuTap.add_command(label='Del Tap', command=self.deleteSpending)
-        menubar.add_cascade(label="Taps", menu=fileMenuTap)
-
         #SETAR TITULO DA JANELA PRINCIPAL
         self.lblTitle = Label(text='', font=self.fontStyleUpper, bg='black', fg='white')
-        self.lblTitle.grid(column=0, row=0, pady=5, padx=10)
+        self.lblTitle.pack(pady=30)
         
         self.setTitleWindowMain()
     
@@ -136,7 +137,7 @@ class months(Frame):
     
     def setTitleWindowMain(self):
         #DEFINE O TITULO
-        self.lblTitle['text'] = f'{self.bancoDados.getNameMonth(self.currentMonth)} de {self.currentYear}'
+        self.lblTitle['text'] = f'FINANCES OF {self.bancoDados.getNameMonth(self.currentMonth)} OF {self.currentYear}'
 
     def nextMonth(self):
             
@@ -180,18 +181,21 @@ class months(Frame):
     def setListBoxSpending(self):
         #LABEL DE GASTOS
         lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg='cyan')
-        lblGastos.grid(column=0, row=1, pady=5, padx=10)
+        lblGastos.place(x=10, y=80)
+        #lblGastos.grid(column=0, row=1, pady=5, padx=10)
 
         self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='black', fg='cyan')
-        self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
+        self.listboxtTaps.pack(side=LEFT, padx=10)
+        #self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
 
     def setListBoxT(self):
         #LABEL DE RECEITA DO MES
         lblReceita = Label(text='BOX T', font=self.fontStyleUpper, bg='black', fg='SpringGreen')
-        lblReceita.grid(column=1, row=1, pady=5, padx=10)
+        lblReceita.place(x=532, y=80)
 
         self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='black', fg='SpringGreen')
-        self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
+        self.listboxBox.pack(side=RIGHT, padx=10)
+        #self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
     def insertTapsListBox(self, m=None, y=None):
 
@@ -272,9 +276,9 @@ class months(Frame):
 
         #INSERIR DESPESAS NO LISTBOX
         self.listboxtTaps.insert("end", '---------------------------------------------------')
-        space = ' ' * 24
+        space = ' ' * 17
 
-        self.listboxtTaps.insert("end", F' TOTAL: {space} R${total}')
+        self.listboxtTaps.insert("end", F'        TOTAL: {space} R${total}')
 
     def updateStatus(self):
 

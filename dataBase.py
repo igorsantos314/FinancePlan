@@ -53,11 +53,12 @@ class bd:
         self.conection.commit()
 
     def insertLog(self, data, action):
+        pass
         #INSERIR NOVO LOG
-        command = f'INSERT INTO LOG (data, action) VALUES("{data}", "{action}")'
+        #command = f'INSERT INTO LOG (data, action) VALUES("{data}", "{action}")'
 
-        self.cur.execute(command)
-        self.conection.commit()
+        #self.cur.execute(command)
+        #self.conection.commit()
 
     def insertBox(self, box, data, Item, valor):
 
@@ -95,9 +96,6 @@ class bd:
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
 
-        #LOG
-        self.insertLog(self.currentData, F' QUERY IN THE BOX {box}')
-
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return BOXs
 
@@ -108,9 +106,6 @@ class bd:
 
         self.cur.execute(show)
         boxT = self.cur.fetchall()
-
-        #LOG
-        self.insertLog(self.currentData, F'QUERY IN THE BOX T')
 
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return boxT
@@ -123,9 +118,6 @@ class bd:
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
 
-        #LOG
-        self.insertLog(self.currentData, F'SUM TUPLES BOX {box}')
-
         #RETORNA A SOMA DOS VALORES
         return sum( [ i[0] for i in BOXs] )
 
@@ -136,9 +128,6 @@ class bd:
 
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
-
-        #LOG
-        self.insertLog(self.currentData, 'SUM TUPLES BOX T')
 
         #RETORNA A SOMA DOS VALORES
         return sum( [ i[0] for i in BOXs] )
@@ -194,9 +183,6 @@ class bd:
         self.cur.execute(show)
         gastos = self.cur.fetchall()
 
-        #LOG
-        self.insertLog(self.currentData, F'QUERY SPENDING IN THE MONTH {m}')
-
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return gastos
 
@@ -240,7 +226,6 @@ class bd:
                 status = '--'
 
         show = F'UPDATE {self.getNameMonth(m)} SET status = "{status}" WHERE id= "{id}"'
-        #print(show)
         self.cur.execute(show)
 
         #CONSOLIDAR BASE DE DADOS
@@ -272,6 +257,47 @@ class bd:
 
         #LOG
         self.insertLog(self.currentData, F'UPDATE VALOR IN SPENDINGS')
+    
+    def updateNomeReceive(self, m, id, Item):
+
+        #ATUALIZA O NOME DA RECEITA
+        show = F'UPDATE BOXT SET Item = "{Item}" WHERE ID= {id} AND mes="{m}"'
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
+
+    def updateValorReceive(self, m, id, valor):
+
+        #ATUALIZA O NOME DA RECEITA
+        show = F'UPDATE BOXT SET valor = {valor} WHERE ID= {id} AND mes="{m}"'
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
+    
+    def updateStatusReceive(self, m, id):
+
+        #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA  
+        show = f"SELECT status FROM BOXT WHERE ID = '{id}' AND mes='{m}'"
+        
+        self.cur.execute(show)
+        item = self.cur.fetchall()
+
+        status = 'PG'
+
+        #CASO ENCONTRE ALGUM ID
+        if len(item) != 0:
+            
+            #FAZ UM SWAP
+            if item[0][0] == 'PG':
+                status = '--'
+
+        show = F'UPDATE BOXT SET status= "{status}" WHERE id= "{id}"'
+        self.cur.execute(show)
+
+        #CONSOLIDAR BASE DE DADOS
+        self.conection.commit()
 
     def resetDataBase(self):
         
@@ -309,13 +335,13 @@ class bd:
             total = self.getGastosMes(m, y)
 
             #ESCREVER A ULTIMA LINHA COM O TOTAL DO MES
-            writer.writerow(['', '', '', 'TOTAL', total, ''])
+            #writer.writerow(['', '', '', 'TOTAL', total, ''])
 
             #PULA UMA LINHA
-            writer.writerow(['', '', '', '', '', ''])
+            #writer.writerow(['', '', '', '', '', ''])
 
             #PULA UMA LINHA
-            writer.writerow(['RECEITA DO MÊS', '', '', '', '', ''])
+            #writer.writerow(['RECEITA DO MÊS', '', '', '', '', ''])
 
             #VARRER LISTA DE GASTOS
             boxT = self.getListBoxTCurrent(m, y)
@@ -328,15 +354,15 @@ class bd:
             totalBoxT = self.getSumBoxT(m, y)
 
             #ESCREVER A ULTIMA LINHA COM O TOTAL DO MES
-            writer.writerow(['', '', '', 'TOTAL', totalBoxT, ''])
+            #writer.writerow(['', '', '', 'TOTAL', totalBoxT, ''])
 
             #PULA UMA LINHA
-            writer.writerow(['', '', '', '', '', ''])
+            #writer.writerow(['', '', '', '', '', ''])
 
             valorRestante = totalBoxT + total
 
             #PULA UMA LINHA
-            writer.writerow(['', '', '', 'SALDO RESTANTE: ', valorRestante, ''])
+            writer.writerow(['', '', '', 'SALDO TOTAL: ', valorRestante, ''])
 
             #LOG
             self.insertLog(self.currentData, F'CREATE MONTHLY REPORT {m}/{y}')
@@ -362,6 +388,10 @@ class bd:
         self.insertLog(self.currentData, F'DROP RECEIVE')
 
 a = bd()
+#a.updateStatusReceive(11, 0)
+#a.updateNomeReceive(11, 0, 'ABCS')
+#a.updateValorReceive(11, 0, 280)
+#a.insertBoxT(11, 2020, 'PARCELA DA MOTO', 300, '--')
 #a.createTableLog()
 #a.dropReceive(11, 0)
 #a.dropSpending(11, 0)
