@@ -1,10 +1,18 @@
 import sqlite3
 import os
 import csv
+from datetime import date
 
 class bd:
 
     def __init__(self):
+
+        #DATA ATUAL
+        self.day = date.today().day
+        self.month = date.today().month
+        self.year = date.today().year
+
+        self.currentData = F'{self.day}/{self.month}/{self.year}'
 
         #LISTA DE MESES
         self.months = ['JANEIRO', 'FEVEREIRO', 'MARCO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO']
@@ -32,8 +40,22 @@ class bd:
     def createTablesBoxT(self):
 
         #CRIAR TABELAS DE BOXs
-        command = F'CREATE TABLE BOXT (ID INTEGER, mes TEXT, ano TEXT, Item TEXT, valor REAL, status Text)'
+        command = 'CREATE TABLE BOXT (ID INTEGER, mes TEXT, ano TEXT, Item TEXT, valor REAL, status Text)'
         
+        self.cur.execute(command)
+        self.conection.commit()
+
+    def createTableLog(self):
+        #CRIAR TABELAS DE LOG
+        command = 'CREATE TABLE LOG (data TEXT, action TEXT)'
+        
+        self.cur.execute(command)
+        self.conection.commit()
+
+    def insertLog(self, data, action):
+        #INSERIR NOVO LOG
+        command = f'INSERT INTO LOG (data, action) VALUES("{data}", "{action}")'
+
         self.cur.execute(command)
         self.conection.commit()
 
@@ -44,7 +66,9 @@ class bd:
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
         command = f'INSERT INTO BOX{box} (ID, data, Item, valor) VALUES({ind}, "{data}", "{Item}", {valor})'
-        print(command)
+        
+        #LOG
+        self.insertLog(self.currentData, F'INSERT DATA IN BOX {box}')
 
         self.cur.execute(command)
         self.conection.commit()
@@ -56,7 +80,9 @@ class bd:
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
         command = f'INSERT INTO BOXT (ID, mes, ano, Item, valor, status) VALUES({ind}, "{mes}", "{ano}", "{Item}", {valor}, "{status}")'
-        print(command)
+        
+        #LOG
+        self.insertLog(self.currentData, F'INSERT DATA IN BOX T')
 
         self.cur.execute(command)
         self.conection.commit()
@@ -69,6 +95,9 @@ class bd:
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
 
+        #LOG
+        self.insertLog(self.currentData, F' QUERY IN THE BOX {box}')
+
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return BOXs
 
@@ -79,6 +108,9 @@ class bd:
 
         self.cur.execute(show)
         boxT = self.cur.fetchall()
+
+        #LOG
+        self.insertLog(self.currentData, F'QUERY IN THE BOX T')
 
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return boxT
@@ -91,6 +123,9 @@ class bd:
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
 
+        #LOG
+        self.insertLog(self.currentData, F'SUM TUPLES BOX {box}')
+
         #RETORNA A SOMA DOS VALORES
         return sum( [ i[0] for i in BOXs] )
 
@@ -101,6 +136,9 @@ class bd:
 
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
+
+        #LOG
+        self.insertLog(self.currentData, 'SUM TUPLES BOX T')
 
         #RETORNA A SOMA DOS VALORES
         return sum( [ i[0] for i in BOXs] )
@@ -141,10 +179,12 @@ class bd:
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
         command = f'INSERT INTO {self.getNameMonth(m)} (ID, ano, Item, valor, status) VALUES({ind}, "{ano}", "{Item}", {valor}, "{status}")'
-        #print(command)
 
         self.cur.execute(command)
         self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'INSERT EM BOX T IN MONTH {m}')
 
     def getListaGastosMes(self, m, y):
 
@@ -153,6 +193,9 @@ class bd:
 
         self.cur.execute(show)
         gastos = self.cur.fetchall()
+
+        #LOG
+        self.insertLog(self.currentData, F'QUERY SPENDING IN THE MONTH {m}')
 
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return gastos
@@ -175,6 +218,9 @@ class bd:
 
         self.cur.execute(command)
         self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'DROP SPENDING IN THE MONTH {m}')
 
     def updateStatusSpending(self, m, id):
 
@@ -199,6 +245,9 @@ class bd:
 
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'UPDATE STATUS IN SPENDINGS')
     
     def updateNameSpending(self, m, id, Item):
 
@@ -209,6 +258,9 @@ class bd:
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
 
+        #LOG
+        self.insertLog(self.currentData, F'UPDATE NAME IN SPENDINGS')
+
     def updateValorSpending(self, m, id, valor):
 
         #ATUALIZA O NOME DO GASTO
@@ -217,6 +269,9 @@ class bd:
 
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'UPDATE VALOR IN SPENDINGS')
 
     def resetDataBase(self):
         
@@ -228,6 +283,9 @@ class bd:
             self.cur.execute(show)
             valores = self.cur.fetchall()
             
+            #LOG
+            self.insertLog(self.currentData, F'FORMAT DATA BASE')
+
             for i in valores:
                 self.dropDespesa(m, i[0])
 
@@ -280,12 +338,18 @@ class bd:
             #PULA UMA LINHA
             writer.writerow(['', '', '', 'SALDO RESTANTE: ', valorRestante, ''])
 
+            #LOG
+            self.insertLog(self.currentData, F'CREATE MONTHLY REPORT {m}/{y}')
+
     def dropSpending(self, m, id):
         #EXCLUIR GASTO
         command = F'DELETE FROM {self.getNameMonth(m)} WHERE id = {id}'
 
         self.cur.execute(command)
         self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'DROP SPENDING')
 
     def dropReceive(self, m, id):
         #EXCLUIR RECEITA
@@ -294,14 +358,18 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+        #LOG
+        self.insertLog(self.currentData, F'DROP RECEIVE')
+
 a = bd()
+#a.createTableLog()
 #a.dropReceive(11, 0)
 #a.dropSpending(11, 0)
 #a.updateValorSpending(11, 0, -150)
 #a.updateNameSpending(11, 0, 'VISEIRA MOTO')
 #print(a.getListBoxTCurrent(11, 2020))
 #a.insertBoxT(11, 2020, 'PROJETO', 250, '--')
-#a.insertBoxT(11, 2020, 'PROJETO DE EXTENSAO', 250, '--')
+#a.insertBoxT(11, 2020, 'PROJETO EXT.', 250, '--')
 #a.insertBox('F', '10/11/2020', 'POUP.', 12000)
 #a.insertBox('S', '10/11/2020', 'POUP.', 12000)
 #print(a.getSumBox('T'))

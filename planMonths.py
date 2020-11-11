@@ -50,6 +50,7 @@ class months(Frame):
         fileMenuFile.add_command(label='New Revenue', command='')
 
         fileMenuFile.add_separator()
+        fileMenuFile.add_command(label='View Log', command='')
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
 
         #fileMenuFile.add_command(label='VALOR', command='lambda: self.windowChangeValor(self.getBarCode(self.listbox.get(ACTIVE)))')
@@ -65,7 +66,7 @@ class months(Frame):
 
         fileMenuBox.add_separator()
 
-        fileMenuBox.add_command(label='Del Receive', command='')
+        fileMenuBox.add_command(label='Del Receive', command=self.deleteReceive)
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
 
@@ -323,7 +324,7 @@ class months(Frame):
 
         comboDespesa = ttk.Combobox(self.windowDespesa, width=12) 
 
-        comboDespesa['values'] = tuple(['ALIMENTAÇÃO', 'COMBUSTIVEL', 'CARTÃO -', 'SAUDE', 'OUTROS'])
+        comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
         comboDespesa.current(0)
         comboDespesa.place(x=20, y=90)
 
@@ -408,7 +409,7 @@ class months(Frame):
         except:
             pass
 
-    def deleteReceive(self, m, id):
+    def deleteReceive(self):
         
         #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
         indice = self.listboxBox.curselection()[0]
