@@ -67,7 +67,7 @@ class months(Frame):
 
         #FILE MENU DE TORNEIRAS
         fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
-        fileMenuTap.add_command(label='Edit Name', command='')
+        fileMenuTap.add_command(label='Edit Name', command=self.updateNameSpending)
         fileMenuTap.add_command(label='Edit Value', command='')
         fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
 
@@ -309,6 +309,48 @@ class months(Frame):
         except:
             pass
 
+    # ----------------------- SETOR DE UPDATE DE NOME -----------------------
+    def updateNameSpending(self):
+
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        lblTitle = Label(text='Update Name Spending', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle.place(x=280, y=100)
+
+        #DESPESA
+        lblDespesa = Label(text='Despesa:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblDespesa.place(x=280, y=140)
+
+        comboDespesa = ttk.Combobox(width=12, font= self.fontDefault) 
+
+        comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
+        comboDespesa.current(0)
+        comboDespesa.place(x=280, y=160)
+
+        def save():
+            pass
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg=self.bgMenu, fg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+            
+            lblTitle.destroy()
+            lblDespesa.destroy()
+            comboDespesa.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
+
     def updateStatusBox(self):
 
         try:
@@ -327,9 +369,9 @@ class months(Frame):
     # ----------------------- SETOR DE CRIAÇÃO DE WINDOW ACLOPLADA  -----------------------
     def createBackGround(self):
 
-        self.backGround = Label(bg='white', width=50, height=20)
+        self.backGround = Label(bg=self.bgMenu, width=50, height=20)
         self.backGround.place(x=270, y=100)
-    
+
     # ----------------------- SETOR DE INSERÇAO DE RECEIVES AND SPENDINGS -----------------------
     def insertDespesa(self):
 
