@@ -52,7 +52,7 @@ class months(Frame):
         #MENU FILE
         fileMenuFile = Menu(myMenu, bg=self.bgMenu, fg='White', font=self.fontDefault)
         fileMenuFile.add_command(label='New Spending', command=self.insertDespesa)
-        fileMenuFile.add_command(label='New Revenue', command='')
+        fileMenuFile.add_command(label='New Revenue', command=self.insertReceive)
 
         fileMenuFile.add_separator()
         fileMenuFile.add_command(label='View Log', command='')
@@ -305,7 +305,7 @@ class months(Frame):
     # ----------------------- SETOR DE CRIAÇÃO DE WINDOW ACLOPLADA  -----------------------
     def createBackGround(self):
 
-        self.backGround = Label(bg=self.bgMenu, width=50, height=20)
+        self.backGround = Label(bg='white', width=50, height=20)
         self.backGround.place(x=270, y=100)
     
     # ----------------------- SETOR DE INSERÇAO DE RECEIVES AND SPENDINGS -----------------------
@@ -314,52 +314,55 @@ class months(Frame):
         #CRIAR FUNDO PRETO
         self.createBackGround()
 
-        #Mes
-        lblMes = Label(text='Mês:', bg=self.bgMenu, fg=self.colorTaps)
-        lblMes.place(x=280, y=120)
+        lblTitle = Label(text='New Spending', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle.place(x=280, y=100)
 
-        comboMes = ttk.Combobox(width= 15) 
+        #Mes
+        lblMes = Label(text='Mês:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblMes.place(x=280, y=140)
+
+        comboMes = ttk.Combobox(width= 15, font= self.fontDefault) 
 
         comboMes['values'] = tuple([i for i in range(1, 12)])
         comboMes.current(self.month-1)
-        comboMes.place(x=280, y=140)
+        comboMes.place(x=280, y=160)
 
         #Ano
-        lblAno = Label(text='Ano:', bg=self.bgMenu, fg=self.colorTaps)
-        lblAno.place(x=430, y=120)
+        lblAno = Label(text='Ano:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblAno.place(x=430, y=140)
 
-        comboAno = ttk.Combobox(width=12) 
+        comboAno = ttk.Combobox(width=12, font= self.fontDefault) 
 
         comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
         comboAno.current(0)
-        comboAno.place(x=430, y=140)
+        comboAno.place(x=430, y=160)
 
         #DESPESA
-        lblDespesa = Label(text='Despesa:', bg=self.bgMenu, fg=self.colorTaps)
-        lblDespesa.place(x=280, y=180)
+        lblDespesa = Label(text='Despesa:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblDespesa.place(x=280, y=200)
 
-        comboDespesa = ttk.Combobox(width=12) 
+        comboDespesa = ttk.Combobox(width=12, font= self.fontDefault) 
 
         comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
         comboDespesa.current(0)
-        comboDespesa.place(x=280, y=200)
+        comboDespesa.place(x=280, y=220)
 
         #VALOR
-        lblValor = Label(text='Valor:', bg=self.bgMenu, fg=self.colorTaps)
-        lblValor.place(x=430, y=180)
+        lblValor = Label(text='Valor:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblValor.place(x=430, y=200)
 
         etValor = Entry(width=9)
-        etValor.place(x=430, y=200)
+        etValor.place(x=430, y=220)
 
         #MACRO
-        lblMacro = Label(text='Macro:', bg=self.bgMenu, fg=self.colorTaps)
-        lblMacro.place(x=280, y=240)
+        lblMacro = Label(text='Macro:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblMacro.place(x=280, y=260)
 
-        comboMacro = ttk.Combobox(width=12) 
+        comboMacro = ttk.Combobox(width=12, font= self.fontDefault, ) 
 
         comboMacro['values'] = tuple([i for i in range(1, 24)])
         comboMacro.current(0)
-        comboMacro.place(x=280, y=260)
+        comboMacro.place(x=280, y=280)
 
         #SALVAR TODOS OS DADOS
         def save():
@@ -416,6 +419,8 @@ class months(Frame):
 
         #DESTRUI ITENS
         def destroyItens():
+            
+            lblTitle.destroy()
 
             lblMes.destroy()
             lblAno.destroy()
@@ -426,6 +431,137 @@ class months(Frame):
             comboMes.destroy()
             comboAno.destroy()
             comboDespesa.destroy()
+            comboMacro.destroy()
+
+            etValor.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
+
+    def insertReceive(self):
+
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        lblTitle = Label(text='New Receive', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorBox)
+        lblTitle.place(x=280, y=100)
+
+        #Mes
+        lblMes = Label(text='Mês:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblMes.place(x=280, y=140)
+
+        comboMes = ttk.Combobox(width= 15, font= self.fontDefault) 
+
+        comboMes['values'] = tuple([i for i in range(1, 12)])
+        comboMes.current(self.month-1)
+        comboMes.place(x=280, y=160)
+
+        #Ano
+        lblAno = Label(text='Ano:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblAno.place(x=430, y=140)
+
+        comboAno = ttk.Combobox(width=12, font= self.fontDefault) 
+
+        comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
+        comboAno.current(0)
+        comboAno.place(x=430, y=160)
+
+        #RECEIVE
+        lblReceive = Label(text='Origem:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblReceive.place(x=280, y=200)
+
+        comboReceive = ttk.Combobox(width=12, font= self.fontDefault) 
+
+        comboReceive['values'] = tuple(['TRABALHO', 'PROEJETO', 'DESENV.', 'ESCOLA', 'INVESTIMENTOS', 'OUTROS'])
+        comboReceive.current(0)
+        comboReceive.place(x=280, y=220)
+
+        #VALOR
+        lblValor = Label(text='Valor:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblValor.place(x=430, y=200)
+
+        etValor = Entry(width=9)
+        etValor.place(x=430, y=220)
+
+        #MACRO
+        lblMacro = Label(text='Macro:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblMacro.place(x=280, y=260)
+
+        comboMacro = ttk.Combobox(width=12, font= self.fontDefault, ) 
+
+        comboMacro['values'] = tuple([i for i in range(1, 24)])
+        comboMacro.current(0)
+        comboMacro.place(x=280, y=280)
+
+        #SALVAR TODOS OS DADOS
+        def save():
+
+            try:
+                #QUANTIDAD ED EPARCELAS
+                iteracoes = int(comboMacro.get())
+                
+                #INFORMAÇẼOS DA COMPRA
+                mes = int(comboMes.get())
+                ano = int(comboAno.get())
+                item  = comboReceive.get().upper()[:20]
+                valor = +float(etValor.get())
+
+                #ADICIONAR O MESMO VALOR EM VÁRIOS MESES
+                for i in range(iteracoes):
+                    
+                    #RESETA O MES A ATUALIZA O ANO
+                    if mes > 12:
+                        mes = 1
+                        ano += 1
+
+                    #CASO SEJA PARCELADO
+                    if iteracoes > 1:
+                        item = F'{comboReceive.get().upper()} {i+1}/{iteracoes}'
+
+                    #ADICIONAR NA BASE DE DADOS
+                    self.bancoDados.insertBoxT(mes, ano, item, valor, '--')
+
+                    #MODIFICA O MES
+                    mes += 1
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Adicionado Com Sucesso !')
+
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
+
+                #RESETA OS CAMPOS DE VALOR E MACRO
+                etValor.delete(0, END)
+
+                comboMacro.current(0)
+
+            except:
+                messagebox.showerror('', 'Ocorreu um Erro !')
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg=self.bgMenu, fg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+            
+            lblTitle.destroy()
+
+            lblMes.destroy()
+            lblAno.destroy()
+            lblReceive.destroy()
+            lblValor.destroy()
+            lblMacro.destroy()
+            
+            comboMes.destroy()
+            comboAno.destroy()
+            comboReceive.destroy()
             comboMacro.destroy()
 
             etValor.destroy()
