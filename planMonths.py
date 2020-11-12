@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from dataBase import bd
+from plotGraphsFinances import plotGraphs
 
 class months(Frame):
 
@@ -10,6 +11,9 @@ class months(Frame):
 
         #OBJETO DE BANCO DE DADOS
         self.bancoDados = bd()
+
+        #OBEJTO DE CRIAÇÃO DE GRAFICOS
+        self.graph = plotGraphs()
 
         #DEFAULT
         self.verdeClaro = 'MediumSpringGreen'
@@ -52,11 +56,12 @@ class months(Frame):
         #MENU FILE
         fileMenuFile = Menu(myMenu, bg=self.bgMenu, fg='White', font=self.fontDefault)
         fileMenuFile.add_command(label='New Spending', command=self.insertDespesa)
-        fileMenuFile.add_command(label='New Revenue', command=self.insertReceive)
+        fileMenuFile.add_command(label='New Revenue', command=self.insertRevenue)
 
         fileMenuFile.add_separator()
         fileMenuFile.add_command(label='View Log', command='')
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
+        fileMenuFile.add_command(label='Graph Spendings Type', command=self.plotGraphSpendingMonth)
 
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
@@ -79,7 +84,7 @@ class months(Frame):
 
         fileMenuBox.add_separator()
 
-        fileMenuBox.add_command(label='Del Receive', command=self.deleteReceive)
+        fileMenuBox.add_command(label='Del Revenue', command=self.deleteRevenue)
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
 
@@ -440,12 +445,12 @@ class months(Frame):
 
             self.backGround.destroy()
 
-    def insertReceive(self):
+    def insertRevenue(self):
 
         #CRIAR FUNDO PRETO
         self.createBackGround()
 
-        lblTitle = Label(text='New Receive', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorBox)
+        lblTitle = Label(text='New Revenue', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorBox)
         lblTitle.place(x=280, y=100)
 
         #Mes
@@ -469,14 +474,14 @@ class months(Frame):
         comboAno.place(x=430, y=160)
 
         #RECEIVE
-        lblReceive = Label(text='Origem:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
-        lblReceive.place(x=280, y=200)
+        lblRevenue = Label(text='Origem:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
+        lblRevenue.place(x=280, y=200)
 
-        comboReceive = ttk.Combobox(width=12, font= self.fontDefault) 
+        comboRevenue = ttk.Combobox(width=12, font= self.fontDefault) 
 
-        comboReceive['values'] = tuple(['TRABALHO', 'PROEJETO', 'DESENV.', 'ESCOLA', 'INVESTIMENTOS', 'OUTROS'])
-        comboReceive.current(0)
-        comboReceive.place(x=280, y=220)
+        comboRevenue['values'] = tuple(['TRABALHO', 'PROEJETO', 'DESENV.', 'ESCOLA', 'INVESTIMENTOS', 'OUTROS'])
+        comboRevenue.current(0)
+        comboRevenue.place(x=280, y=220)
 
         #VALOR
         lblValor = Label(text='Valor:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
@@ -505,7 +510,7 @@ class months(Frame):
                 #INFORMAÇẼOS DA COMPRA
                 mes = int(comboMes.get())
                 ano = int(comboAno.get())
-                item  = comboReceive.get().upper()[:20]
+                item  = comboRevenue.get().upper()[:20]
                 valor = +float(etValor.get())
 
                 #ADICIONAR O MESMO VALOR EM VÁRIOS MESES
@@ -518,7 +523,7 @@ class months(Frame):
 
                     #CASO SEJA PARCELADO
                     if iteracoes > 1:
-                        item = F'{comboReceive.get().upper()} {i+1}/{iteracoes}'
+                        item = F'{comboRevenue.get().upper()} {i+1}/{iteracoes}'
 
                     #ADICIONAR NA BASE DE DADOS
                     self.bancoDados.insertBoxT(mes, ano, item, valor, '--')
@@ -555,13 +560,13 @@ class months(Frame):
 
             lblMes.destroy()
             lblAno.destroy()
-            lblReceive.destroy()
+            lblRevenue.destroy()
             lblValor.destroy()
             lblMacro.destroy()
             
             comboMes.destroy()
             comboAno.destroy()
-            comboReceive.destroy()
+            comboRevenue.destroy()
             comboMacro.destroy()
 
             etValor.destroy()
@@ -579,7 +584,7 @@ class months(Frame):
             indice = self.listboxtTaps.curselection()[0]
             id = int(self.listboxtTaps.get(indice).split(" ")[0])
             
-            if messagebox.askquestion('', F'Delete Spending ID: {id} ?'):
+            if messagebox.askquestion('', F'Delete Spending ID: {id} ?') == True:
                 
                 #DELETA O ITEM SELECIONADO    
                 self.bancoDados.dropSpending(self.currentMonth, id)
@@ -590,16 +595,16 @@ class months(Frame):
         except:
             pass
 
-    def deleteReceive(self):
+    def deleteRevenue(self):
         
         #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
         indice = self.listboxBox.curselection()[0]
         id = int(self.listboxBox.get(indice).split(" ")[0])
         
-        if messagebox.askquestion('', F'Delete Receive ID: {id} ?'):
+        if messagebox.askquestion('', F'Delete Revenue ID: {id} ?') == True:
             
             #DELETA O ITEM SELECIONADO    
-            self.bancoDados.dropReceive(self.currentMonth, id)
+            self.bancoDados.dropRevenue(self.currentMonth, id)
 
             #ATUALIZAR LISTBOX
             self.insertTapsListBox()                
@@ -616,6 +621,17 @@ class months(Frame):
 
         except:
             messagebox.showerror('', 'OCORREU UM ERRO :(')
+
+    def plotGraphSpendingMonth(self):
+
+        #SOMA POR TIPO DE GASTO
+        spendings = self.bancoDados.getTypeGastos(self.currentMonth, self.currentYear)
+
+        #INDICES DA COLUNA Y
+        index = self.bancoDados.spendings
+
+        #GERAR GRAFICO
+        self.graph.generateGraph(spendings, index, 'SPENDING MONTH', 'VALOR EM R$', 'SPENDINGS')
 
 if __name__ == "__main__":
     m = months()

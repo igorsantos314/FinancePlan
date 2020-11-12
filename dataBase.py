@@ -17,6 +17,9 @@ class bd:
         #LISTA DE MESES
         self.months = ['JANEIRO', 'FEVEREIRO', 'MARCO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO']
 
+        #TIPO DE GASTOS
+        self.spendings = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
+
         caminhoAtual = os.getcwd()
 
         self.conection = sqlite3.connect('{}/finance.db'.format(caminhoAtual))
@@ -197,6 +200,24 @@ class bd:
         #RETORNA A SOMA DOS VALORES DO MES E ANO DESEJADOS
         return sum([v[0] for v in valores])
 
+    def getTypeGastos(self, m, y):
+        
+        listSumGastos = []
+
+        for i in self.spendings:
+
+            #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
+            show = f"SELECT valor FROM {self.getNameMonth(m)} WHERE ano = '{y}' AND Item='{i}'"
+
+            self.cur.execute(show)
+            valores = self.cur.fetchall()
+
+            #SOMA E ADICIONA NA LISTA DE GASTOS POR TIPO
+
+            listSumGastos.append(sum([v[0]*-1 for v in valores]))
+
+        return tuple(listSumGastos)
+
     def dropDespesa(self, m, ind):
 
         #DELETAR DESPESA
@@ -258,7 +279,7 @@ class bd:
         #LOG
         self.insertLog(self.currentData, F'UPDATE VALOR IN SPENDINGS')
     
-    def updateNomeReceive(self, m, id, Item):
+    def updateNomeRevenue(self, m, id, Item):
 
         #ATUALIZA O NOME DA RECEITA
         show = F'UPDATE BOXT SET Item = "{Item}" WHERE ID= {id} AND mes="{m}"'
@@ -267,7 +288,7 @@ class bd:
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
 
-    def updateValorReceive(self, m, id, valor):
+    def updateValorRevenue(self, m, id, valor):
 
         #ATUALIZA O NOME DA RECEITA
         show = F'UPDATE BOXT SET valor = {valor} WHERE ID= {id} AND mes="{m}"'
@@ -276,7 +297,7 @@ class bd:
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
     
-    def updateStatusReceive(self, m, id):
+    def updateStatusRevenue(self, m, id):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA  
         show = f"SELECT status FROM BOXT WHERE ID = '{id}' AND mes='{m}'"
@@ -353,12 +374,6 @@ class bd:
 
             totalBoxT = self.getSumBoxT(m, y)
 
-            #ESCREVER A ULTIMA LINHA COM O TOTAL DO MES
-            #writer.writerow(['', '', '', 'TOTAL', totalBoxT, ''])
-
-            #PULA UMA LINHA
-            #writer.writerow(['', '', '', '', '', ''])
-
             valorRestante = totalBoxT + total
 
             #PULA UMA LINHA
@@ -377,7 +392,7 @@ class bd:
         #LOG
         self.insertLog(self.currentData, F'DROP SPENDING')
 
-    def dropReceive(self, m, id):
+    def dropRevenue(self, m, id):
         #EXCLUIR RECEITA
         command = F'DELETE FROM BOXT WHERE id = {id} AND mes = "{m}"'
 
@@ -385,15 +400,16 @@ class bd:
         self.conection.commit()
 
         #LOG
-        self.insertLog(self.currentData, F'DROP RECEIVE')
+        self.insertLog(self.currentData, F'DROP Revenue')
 
 a = bd()
-#a.updateStatusReceive(11, 0)
-#a.updateNomeReceive(11, 0, 'ABCS')
-#a.updateValorReceive(11, 0, 280)
+#print(a.getTypeGastos(11, 2020))
+#a.updateStatusRevenue(11, 0)
+#a.updateNomeRevenue(11, 0, 'ABCS')
+#a.updateValorRevenue(11, 0, 280)
 #a.insertBoxT(11, 2020, 'PARCELA DA MOTO', 300, '--')
 #a.createTableLog()
-#a.dropReceive(11, 0)
+#a.dropRevenue(11, 0)
 #a.dropSpending(11, 0)
 #a.updateValorSpending(11, 0, -150)
 #a.updateNameSpending(11, 0, 'VISEIRA MOTO')
