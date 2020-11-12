@@ -22,7 +22,8 @@ class months(Frame):
 
         #MENU
         self.bgMenu = 'Black'
-        self.fgMenu = 'SpringGreen'
+        self.colorTaps = 'Cyan'
+        self.colorBox = 'SpringGreen'
 
         #DATA ATUAL
         self.day = date.today().day
@@ -71,7 +72,7 @@ class months(Frame):
         menubar.add_cascade(label="Taps", menu=fileMenuTap)
 
         #FILE MENU DE CAIXAS
-        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.fgMenu, font=self.fontDefault)
+        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
         fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
@@ -113,6 +114,7 @@ class months(Frame):
 
         self.windowMain.mainloop()
 
+    # ----------------------- SETOR DE CAPTAÇÃO DE TEVLAS DE ATALHO -----------------------
     def keyPressed(self, event):
         l = event.keysym
 
@@ -135,10 +137,12 @@ class months(Frame):
             #AVANÇA UM MES
             self.nextMonth()
     
+    # ----------------------- SETOR DE DEFINIÇÃO DE TITULO -----------------------
     def setTitleWindowMain(self):
         #DEFINE O TITULO
         self.lblTitle['text'] = f'FINANCES OF {self.bancoDados.getNameMonth(self.currentMonth)} OF {self.currentYear}'
 
+    # ----------------------- SETOR DE MODIFICAÇÃO DE MES -----------------------
     def nextMonth(self):
             
         #VERIFICA SE ESTA EM DEZEMBRO E AVANÇA UM ANO
@@ -177,7 +181,8 @@ class months(Frame):
 
         #ATUALIZA LISTA DA RECEITA
         self.insertTapsListBox()
-
+    
+    # ----------------------- SETOR DE CRIAÇÃO DOS LISTBOXs -----------------------
     def setListBoxSpending(self):
         #LABEL DE GASTOS
         lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg='cyan')
@@ -190,13 +195,14 @@ class months(Frame):
 
     def setListBoxT(self):
         #LABEL DE RECEITA DO MES
-        lblReceita = Label(text='BOX T', font=self.fontStyleUpper, bg='black', fg='SpringGreen')
+        lblReceita = Label(text='BOX T', font=self.fontStyleUpper, bg='black', fg=self.colorBox)
         lblReceita.place(x=532, y=80)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='black', fg='SpringGreen')
+        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='black', fg=self.colorBox)
         self.listboxBox.pack(side=RIGHT, padx=10)
         #self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
+    # ----------------------- SETOR DE INSERÇÃO NO LITBOX -----------------------
     def insertTapsListBox(self, m=None, y=None):
 
         #INCIALIZADOR PADRÃO
@@ -280,6 +286,7 @@ class months(Frame):
 
         self.listboxtTaps.insert("end", F'        TOTAL: {space} R${total}')
 
+    # ----------------------- SETOR DE UPDATE DE STATUS -----------------------
     def updateStatus(self):
 
         try:
@@ -295,60 +302,66 @@ class months(Frame):
         except:
             pass
 
+    # ----------------------- SETOR DE CRIAÇÃO DE WINDOW ACLOPLADA  -----------------------
+    def createBackGround(self):
+
+        self.backGround = Label(bg=self.bgMenu, width=50, height=20)
+        self.backGround.place(x=270, y=100)
+    
+    # ----------------------- SETOR DE INSERÇAO DE RECEIVES AND SPENDINGS -----------------------
     def insertDespesa(self):
 
-        self.windowDespesa = Tk()
-        self.windowDespesa.geometry('300x200+10+10')
-        self.windowDespesa.resizable(False, False)
-        self.windowDespesa.title('ADD DESPESA')
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
 
         #Mes
-        lblMes = Label(self.windowDespesa, text='Mês:')
-        lblMes.place(x=20, y=20)
+        lblMes = Label(text='Mês:', bg=self.bgMenu, fg=self.colorTaps)
+        lblMes.place(x=280, y=120)
 
-        comboMes = ttk.Combobox(self.windowDespesa, width= 15) 
+        comboMes = ttk.Combobox(width= 15) 
 
         comboMes['values'] = tuple([i for i in range(1, 12)])
         comboMes.current(self.month-1)
-        comboMes.place(x=20, y=40)
+        comboMes.place(x=280, y=140)
 
         #Ano
-        lblAno = Label(self.windowDespesa, text='Ano:')
-        lblAno.place(x=170, y=20)
+        lblAno = Label(text='Ano:', bg=self.bgMenu, fg=self.colorTaps)
+        lblAno.place(x=430, y=120)
 
-        comboAno = ttk.Combobox(self.windowDespesa, width=12) 
+        comboAno = ttk.Combobox(width=12) 
 
         comboAno['values'] = tuple(['{}'.format(i) for i in range(2020, 2051)])
         comboAno.current(0)
-        comboAno.place(x=170, y=40)
+        comboAno.place(x=430, y=140)
 
         #DESPESA
-        lblDespesa = Label(self.windowDespesa, text='Despesa:')
-        lblDespesa.place(x=20, y=70)
+        lblDespesa = Label(text='Despesa:', bg=self.bgMenu, fg=self.colorTaps)
+        lblDespesa.place(x=280, y=180)
 
-        comboDespesa = ttk.Combobox(self.windowDespesa, width=12) 
+        comboDespesa = ttk.Combobox(width=12) 
 
         comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
         comboDespesa.current(0)
-        comboDespesa.place(x=20, y=90)
+        comboDespesa.place(x=280, y=200)
 
         #VALOR
-        lblValor = Label(self.windowDespesa, text='Valor:')
-        lblValor.place(x=170, y=70)
+        lblValor = Label(text='Valor:', bg=self.bgMenu, fg=self.colorTaps)
+        lblValor.place(x=430, y=180)
 
-        etValor = Entry(self.windowDespesa, width=9)
-        etValor.place(x=170, y=90)
+        etValor = Entry(width=9)
+        etValor.place(x=430, y=200)
 
         #MACRO
-        lblMacro = Label(self.windowDespesa, text='Macro:')
-        lblMacro.place(x=20, y=120)
+        lblMacro = Label(text='Macro:', bg=self.bgMenu, fg=self.colorTaps)
+        lblMacro.place(x=280, y=240)
 
-        comboMacro = ttk.Combobox(self.windowDespesa, width=12) 
+        comboMacro = ttk.Combobox(width=12) 
 
         comboMacro['values'] = tuple([i for i in range(1, 24)])
         comboMacro.current(0)
-        comboMacro.place(x=20, y=140)
+        comboMacro.place(x=280, y=260)
 
+        #SALVAR TODOS OS DADOS
         def save():
 
             try:
@@ -385,14 +398,42 @@ class months(Frame):
                 #ATUALIZA AS TABELAS
                 self.refreshTables()
 
+                #RESETA OS CAMPOS DE VALOR E MACRO
+                etValor.delete(0, END)
+
+                comboMacro.current(0)
+
             except:
                 messagebox.showerror('', 'Ocorreu um Erro !')
 
-        #BOTAO SE SALVAMENTO
-        btSave = Button(self.windowDespesa, text='SALVAR', bg='MediumSpringGreen', command=save)
-        btSave.place(x=170, y=140)
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
 
-        self.windowDespesa.mainloop() 
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+
+            lblMes.destroy()
+            lblAno.destroy()
+            lblDespesa.destroy()
+            lblValor.destroy()
+            lblMacro.destroy()
+            
+            comboMes.destroy()
+            comboAno.destroy()
+            comboDespesa.destroy()
+            comboMacro.destroy()
+
+            etValor.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
 
     # ----------------------- SETOR DE EXCLUSÃO -----------------------
     def deleteSpending(self):
