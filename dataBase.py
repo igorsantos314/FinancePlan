@@ -127,7 +127,7 @@ class bd:
     def getSumBoxT(self, m, y):
 
         #EXIBIR TODOS OS DADOS DA CAIXA SELECIONADA
-        show = f"SELECT valor FROM BOXT WHERE mes='{m}' AND ano='{y}'"
+        show = f"SELECT valor FROM BOXT WHERE mes='{m}' AND ano='{y}' AND status='PG'"
 
         self.cur.execute(show)
         BOXs = self.cur.fetchall()
@@ -393,6 +393,7 @@ class bd:
         self.insertLog(self.currentData, F'DROP SPENDING')
 
     def dropRevenue(self, m, id):
+        print('ok')
         #EXCLUIR RECEITA
         command = F'DELETE FROM BOXT WHERE id = {id} AND mes = "{m}"'
 

@@ -66,7 +66,7 @@ class months(Frame):
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
         #FILE MENU DE TORNEIRAS
-        fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg='Cyan', font=self.fontDefault)
+        fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
         fileMenuTap.add_command(label='Edit Name', command='')
         fileMenuTap.add_command(label='Edit Value', command='')
         fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
@@ -77,11 +77,13 @@ class months(Frame):
         menubar.add_cascade(label="Taps", menu=fileMenuTap)
 
         #FILE MENU DE CAIXAS
-        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
+        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.colorBox, font=self.fontDefault)
         fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
 
+        fileMenuBox.add_separator()
+        fileMenuBox.add_command(label='Update Status', command=self.updateStatusBox)
         fileMenuBox.add_separator()
 
         fileMenuBox.add_command(label='Del Revenue', command=self.deleteRevenue)
@@ -132,7 +134,7 @@ class months(Frame):
             self.insertSpendingListBox()
 
             #ATUALIZA LISTA DA RECEITA
-            self.insertTapsListBox()
+            self.insertRevenueListBox()
 
         elif l == 'F6':
             #VOLTA UM MES
@@ -185,12 +187,12 @@ class months(Frame):
         self.insertSpendingListBox()
 
         #ATUALIZA LISTA DA RECEITA
-        self.insertTapsListBox()
+        self.insertRevenueListBox()
     
     # ----------------------- SETOR DE CRIAÇÃO DOS LISTBOXs -----------------------
     def setListBoxSpending(self):
         #LABEL DE GASTOS
-        lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg='cyan')
+        lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg=self.colorTaps)
         lblGastos.place(x=10, y=80)
         #lblGastos.grid(column=0, row=1, pady=5, padx=10)
 
@@ -208,7 +210,7 @@ class months(Frame):
         #self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
 
     # ----------------------- SETOR DE INSERÇÃO NO LITBOX -----------------------
-    def insertTapsListBox(self, m=None, y=None):
+    def insertRevenueListBox(self, m=None, y=None):
 
         #INCIALIZADOR PADRÃO
         if m is None:
@@ -234,7 +236,7 @@ class months(Frame):
             nome = "{}{}".format(i[3], " " * (18 - len(i[3])))
 
             valor = "{}".format(i[4])
-            valor = "R${}{}".format(valor, " " * (8 - len(valor)))
+            valor = "R${}{}".format(valor, " " * (10 - len(valor)))
 
             statusPag = "{}{}".format(i[5], " " * (12 - len(i[5])))
 
@@ -276,9 +278,9 @@ class months(Frame):
             nome = "{}{}".format(i[2], " " * (25 - len(i[2])))
 
             valor = "{}".format(i[3])
-            valor = "R${}{}".format(valor, " " * (8 - len(valor)))
+            valor = "R${}{}".format(valor, " " * (10 - len(valor)))
 
-            statusPag = "{}{}".format(i[4], " " * (12 - len(i[4])))
+            statusPag = i[4]
 
             self.listboxtTaps.insert("end", F'{id}{nome}{valor}{statusPag}')
 
@@ -301,8 +303,23 @@ class months(Frame):
             #ATUALIZAR O STATUS        
             self.bancoDados.updateStatusSpending(self.currentMonth, id)
 
-            #ATUALIZAR LISTBOX
-            self.insertSpendingListBox()
+            #ATUALIZAR TABELAS
+            self.refreshTables()
+
+        except:
+            pass
+
+    def updateStatusBox(self):
+
+        try:
+            indice = self.listboxBox.curselection()[0]
+            id = int(self.listboxBox.get(indice).split(" ")[0])
+            
+            #ATUALIZAR O STATUS        
+            self.bancoDados.updateStatusRevenue(self.currentMonth, id)
+
+            #ATUALIZAR TABELAS
+            self.refreshTables()
 
         except:
             pass
@@ -584,7 +601,7 @@ class months(Frame):
             indice = self.listboxtTaps.curselection()[0]
             id = int(self.listboxtTaps.get(indice).split(" ")[0])
             
-            if messagebox.askquestion('', F'Delete Spending ID: {id} ?') == True:
+            if messagebox.askquestion('', F'Delete Spending ID: {id} ?') == 'yes':
                 
                 #DELETA O ITEM SELECIONADO    
                 self.bancoDados.dropSpending(self.currentMonth, id)
@@ -601,13 +618,13 @@ class months(Frame):
         indice = self.listboxBox.curselection()[0]
         id = int(self.listboxBox.get(indice).split(" ")[0])
         
-        if messagebox.askquestion('', F'Delete Revenue ID: {id} ?') == True:
+        if messagebox.askquestion('', F'Delete Revenue ID: {id} ?') == 'yes':
             
             #DELETA O ITEM SELECIONADO    
             self.bancoDados.dropRevenue(self.currentMonth, id)
 
             #ATUALIZAR LISTBOX
-            self.insertTapsListBox()                
+            self.insertRevenueListBox()                
     
     # ----------------------- SETOR DE CRIAÇÃO DE RALATORIOS -----------------------
     def createMonthlyReport(self):
