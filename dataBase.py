@@ -24,7 +24,8 @@ class bd:
 
         self.conection = sqlite3.connect('{}/finance.db'.format(caminhoAtual))
         self.cur = self.conection.cursor()
-    
+
+    # ----------------------------------- CRIAÇÃO DE TABELAS -----------------------------------
     def createTablesMonths(self, m):
         #CRIAR TABELAS DE MESES
         command = 'CREATE TABLE {} (ID INTEGER, ano TEXT, Item TEXT, valor REAL, status Text)'.format(m)
@@ -55,6 +56,14 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    def createTableInvestments(self):
+        #CRIAR TABELAS DE INVESTIMENTOS
+        command = 'CREATE TABLE INVESTMENTS (Id INTEGER, data TEXT, nome_ativo Text, tipo_ativo TEXT, tipo_transacao TEXT, valor REAL)'
+        
+        self.cur.execute(command)
+        self.conection.commit()
+
+    # ----------------------------------- INSERIR NA BASE DE DADOS -----------------------------------
     def insertLog(self, data, action):
         pass
         #INSERIR NOVO LOG
@@ -91,6 +100,31 @@ class bd:
         self.cur.execute(command)
         self.conection.commit()
 
+    def insertItem(self, m, ano, Item, valor, status):
+        
+        #PEGA O UTLIMO INDICE
+        ind = self.getLastID(m, ano)
+
+        #INSERIR DADOS NA TABELA MES NA POSICAO M
+        command = f'INSERT INTO {self.getNameMonth(m)} (ID, ano, Item, valor, status) VALUES({ind}, "{ano}", "{Item}", {valor}, "{status}")'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'INSERT EM BOX T IN MONTH {m}')
+
+    def insertInvestment(self, data, nome_ativo, tipo_ativo, tipo_transacao, valor):
+        #PEGA O UTLIMO INDICE
+        ind = self.getLastIdInvestments()
+
+        #INSERIR DADOS NA TABELA MES NA POSICAO M
+        command = f'INSERT INTO INVESTMENTS (Id, data, nome_ativo, tipo_ativo, tipo_transacao, valor) VALUES({ind}, "{data}", "{nome_ativo}", "{tipo_ativo}", "{tipo_transacao}", {valor})'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
+    # ----------------------------------- SETOR DE CONSULTA -----------------------------------
     def getListBox(self, box):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
@@ -135,6 +169,16 @@ class bd:
         #RETORNA A SOMA DOS VALORES
         return sum( [ i[0] for i in BOXs] )
 
+    def getInvestments(self):
+        #EXIBIR TODOS OS INVESTIMENTOS
+        show = f"SELECT * FROM INVESTMENTS"
+
+        self.cur.execute(show)
+        inv = self.cur.fetchall()
+
+        #RETORNA TODOS OS INVESTIMENTOS
+        return inv
+
     def getLastIDBox(self, box):
 
         #LISTA CASH DEPOSIT DA CAIXA ESCOLHIDA
@@ -159,24 +203,22 @@ class bd:
         else:
             #RETORNA O NOVO ID
             return int(gastos[-1][0]) + 1 
+    
+    def  getLastIdInvestments(self):
+        
+        inves = self.getInvestments()
+
+        #VERIFICA SE É NULA
+        if len(inves) == 0:
+            return 0
+
+        else:
+            #RETORNA O NOVO ID
+            return int(inves[-1][0]) + 1 
 
     def getNameMonth(self, m):
         #TRANSFORMA MES DE NUMERO PARA O NOME
         return self.months[m-1]
-
-    def insertItem(self, m, ano, Item, valor, status):
-        
-        #PEGA O UTLIMO INDICE
-        ind = self.getLastID(m, ano)
-
-        #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = f'INSERT INTO {self.getNameMonth(m)} (ID, ano, Item, valor, status) VALUES({ind}, "{ano}", "{Item}", {valor}, "{status}")'
-
-        self.cur.execute(command)
-        self.conection.commit()
-
-        #LOG
-        self.insertLog(self.currentData, F'INSERT EM BOX T IN MONTH {m}')
 
     def getListaGastosMes(self, m, y):
 
@@ -218,6 +260,7 @@ class bd:
 
         return tuple(listSumGastos)
 
+    # ----------------------------------- SETOR DE EXCLUSÃO DE TUPLAS -----------------------------------
     def dropDespesa(self, m, ind):
 
         #DELETAR DESPESA
@@ -229,6 +272,28 @@ class bd:
         #LOG
         self.insertLog(self.currentData, F'DROP SPENDING IN THE MONTH {m}')
 
+    def dropSpending(self, m, id):
+        #EXCLUIR GASTO
+        command = F'DELETE FROM {self.getNameMonth(m)} WHERE id = {id}'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'DROP SPENDING')
+
+    def dropRevenue(self, m, id):
+        print('ok')
+        #EXCLUIR RECEITA
+        command = F'DELETE FROM BOXT WHERE id = {id} AND mes = "{m}"'
+
+        self.cur.execute(command)
+        self.conection.commit()
+
+        #LOG
+        self.insertLog(self.currentData, F'DROP Revenue')
+
+    # ----------------------------------- SETOR DE UPDATE DE DADOS -----------------------------------
     def updateStatusSpending(self, m, id):
 
         #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA  
@@ -320,6 +385,7 @@ class bd:
         #CONSOLIDAR BASE DE DADOS
         self.conection.commit()
 
+    # ----------------------------------- SETOR DE LIMPEZA DES TABELAS MESES -----------------------------------
     def resetDataBase(self):
         
         for m in range(13):
@@ -336,6 +402,7 @@ class bd:
             for i in valores:
                 self.dropDespesa(m, i[0])
 
+    # ----------------------------------- SETOR DE CRIAÇÃO DE RELATORIOS -----------------------------------
     def createCSV(self, m, y):
 
         with open(F'Relatorio_Mensal_{m}-{y}.csv', 'w', newline='') as file:
@@ -382,28 +449,15 @@ class bd:
             #LOG
             self.insertLog(self.currentData, F'CREATE MONTHLY REPORT {m}/{y}')
 
-    def dropSpending(self, m, id):
-        #EXCLUIR GASTO
-        command = F'DELETE FROM {self.getNameMonth(m)} WHERE id = {id}'
-
-        self.cur.execute(command)
-        self.conection.commit()
-
-        #LOG
-        self.insertLog(self.currentData, F'DROP SPENDING')
-
-    def dropRevenue(self, m, id):
-        print('ok')
-        #EXCLUIR RECEITA
-        command = F'DELETE FROM BOXT WHERE id = {id} AND mes = "{m}"'
-
-        self.cur.execute(command)
-        self.conection.commit()
-
-        #LOG
-        self.insertLog(self.currentData, F'DROP Revenue')
-
 a = bd()
+#a.insertInvestment('05/11/2020', 'ONEF11', 'FII', 'COMPRA', 145)
+#a.insertInvestment('05/11/2020', 'TESOURO PRE 2026', 'REND. FIXA', 'COMPRA', 97)
+#a.insertInvestment('06/11/2020', 'VINO11', 'FII', 'COMPRA', 60.20)
+#a.insertInvestment('09/11/2020', 'ARCT11', 'FII', 'COMPRA', 1119.40)
+#a.insertInvestment('09/11/2020', 'BARI11', 'FII', 'COMPRA', 106.33)
+#print(a.getInvestments())
+#a.insertInvestment('13/11/2020', '', '', '', 145)
+#a.createTableInvestments()
 #print(a.getTypeGastos(11, 2020))
 #a.updateStatusRevenue(11, 0)
 #a.updateNomeRevenue(11, 0, 'ABCS')

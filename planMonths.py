@@ -28,6 +28,7 @@ class months(Frame):
         self.bgMenu = 'Black'
         self.colorTaps = 'Cyan'
         self.colorBox = 'SpringGreen'
+        self.colorInvestments = 'Orange'
 
         #DATA ATUAL
         self.day = date.today().day
@@ -89,6 +90,23 @@ class months(Frame):
         fileMenuBox.add_command(label='Del Revenue', command=self.deleteRevenue)
 
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
+
+        #FILE MENU DE INVESTIMENTOS
+        fileInvestments = Menu(myMenu, bg=self.bgMenu, fg=self.colorInvestments, font=self.fontDefault)
+        fileInvestments.add_command(label='New Investiment', command='')
+        fileInvestments.add_command(label='View Investments', command=self.viewInvestments)
+        fileInvestments.add_command(label='Add Dividends', command='')
+
+        fileInvestments.add_separator()
+        fileInvestments.add_command(label='Close Table', command=self.closeTableInvestments)
+        fileInvestments.add_separator()
+
+        fileInvestments.add_command(label='Update Investiment', command=self.updateStatusBox)
+        fileInvestments.add_separator()
+
+        fileInvestments.add_command(label='Del Investiment', command=self.deleteRevenue)
+
+        menubar.add_cascade(label="Investments", menu=fileInvestments)
 
         #SETAR TITULO DA JANELA PRINCIPAL
         self.lblTitle = Label(text='', font=self.fontStyleUpper, bg='black', fg='white')
@@ -293,6 +311,43 @@ class months(Frame):
 
         self.listboxtTaps.insert("end", F'        TOTAL: {space} R${total}')
 
+    def viewInvestments(self):
+
+        self.listboxInvestments = Listbox(self.windowMain, height=27, width=99, font= self.fontDefault, bg='black', fg=self.colorInvestments)
+        self.listboxInvestments.place(x=0, y=0)
+
+        #INSERIR CABEÇALHO
+        self.listboxInvestments.insert("end", 'CODE    DATE         NAME ACTIVE         TYPE ACTIVE           TRANSACTION TYPE       VALUE')
+        self.listboxInvestments.insert("end", '-------------------------------------------------------------------------------------------------')
+
+        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
+        listInvestments = self.bancoDados.getInvestments()
+
+        for i in listInvestments:
+
+            #FORMATAÇÃO DE STRING
+            id = "{}".format(i[0])
+            id = "{}{}".format(i[0], " " * (8 - len(id)))
+
+            data = "{}{}".format(i[1], " " * (13 - len(i[1])))
+
+            nomeAtivo = "{}{}".format(i[2], " " * (20 - len(i[2])))
+            tipoAtivo = "{}{}".format(i[3], " " * (22 - len(i[3])))
+            tipoTransacao = "{}{}".format(i[4], " " * (23 - len(i[4])))
+
+            valor = F'R${i[5]}'
+
+            self.listboxInvestments.insert("end", F'{id}{data}{nomeAtivo}{tipoAtivo}{tipoTransacao}{valor}')
+
+    def closeTableInvestments(self):
+
+        #DESTROY LIST BOX DE INVESTIMENTOS CASO ESTEJA ABERTO
+        try:
+            self.listboxInvestments.destroy()
+
+        except:
+            pass
+
     # ----------------------- SETOR DE UPDATE DE STATUS -----------------------
     def updateStatus(self):
 
@@ -315,7 +370,7 @@ class months(Frame):
         #CRIAR FUNDO PRETO
         self.createBackGround()
 
-        lblTitle = Label(text='Update Name Spending', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle = Label(text='Update Name Spending', font=self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
         lblTitle.place(x=280, y=100)
 
         #DESPESA
@@ -385,7 +440,7 @@ class months(Frame):
         lblMes = Label(text='Mês:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
         lblMes.place(x=280, y=140)
 
-        comboMes = ttk.Combobox(width= 15, font= self.fontDefault) 
+        comboMes = ttk.Combobox(width= 10, font= self.fontDefault) 
 
         comboMes['values'] = tuple([i for i in range(1, 12)])
         comboMes.current(self.month-1)
