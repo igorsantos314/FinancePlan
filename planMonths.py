@@ -60,7 +60,6 @@ class months(Frame):
         fileMenuFile.add_command(label='New Revenue', command=self.insertRevenue)
 
         fileMenuFile.add_separator()
-        fileMenuFile.add_command(label='View Log', command='')
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
         fileMenuFile.add_command(label='Graph Spendings Type', command=self.plotGraphSpendingMonth)
 
@@ -139,7 +138,7 @@ class months(Frame):
 
         self.windowMain.mainloop()
 
-    # ----------------------- SETOR DE CAPTAÇÃO DE TEVLAS DE ATALHO -----------------------
+    # ----------------------- SETOR DE CAPTAÇÃO DE TECLAS DE ATALHO -----------------------
     def keyPressed(self, event):
         l = event.keysym
 
@@ -379,12 +378,19 @@ class months(Frame):
 
         comboDespesa = ttk.Combobox(width=12, font= self.fontDefault) 
 
-        comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
+        comboDespesa['values'] = self.bancoDados.spendings
         comboDespesa.current(0)
         comboDespesa.place(x=280, y=160)
 
         def save():
-            pass
+            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+            indice = self.listboxtTaps.curselection()[0]
+            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+
+            newItem = comboDespesa.get()
+
+            if messagebox.askquestion('Update Name', F'DESEJAR ALTERA NOME ID [{id}]?') == 'yes':
+                self.bancoDados.updateNameSpending(self.currentMonth, id, newItem)
 
         #BOTAO DE SALVAMENTO
         btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)

@@ -18,7 +18,7 @@ class bd:
         self.months = ['JANEIRO', 'FEVEREIRO', 'MARCO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO']
 
         #TIPO DE GASTOS
-        self.spendings = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
+        self.spendings = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'TRANSPORTE', 'MTL', 'OUTROS'])
 
         caminhoAtual = os.getcwd()
 
@@ -58,7 +58,7 @@ class bd:
 
     def createTableInvestments(self):
         #CRIAR TABELAS DE INVESTIMENTOS
-        command = 'CREATE TABLE INVESTMENTS (Id INTEGER, data TEXT, nome_ativo Text, tipo_ativo TEXT, tipo_transacao TEXT, valor REAL)'
+        command = 'CREATE TABLE INVESTMENTS (Id INTEGER, data TEXT, nome_ativo TEXT, tipo_ativo TEXT, tipo_transacao TEXT, valor REAL, quant_ativos INTEGER, numero_estados INTEGER, taxa_adm REAL)'
         
         self.cur.execute(command)
         self.conection.commit()
@@ -422,15 +422,6 @@ class bd:
             #VALOR TOTAL DO MÊS
             total = self.getGastosMes(m, y)
 
-            #ESCREVER A ULTIMA LINHA COM O TOTAL DO MES
-            #writer.writerow(['', '', '', 'TOTAL', total, ''])
-
-            #PULA UMA LINHA
-            #writer.writerow(['', '', '', '', '', ''])
-
-            #PULA UMA LINHA
-            #writer.writerow(['RECEITA DO MÊS', '', '', '', '', ''])
-
             #VARRER LISTA DE GASTOS
             boxT = self.getListBoxTCurrent(m, y)
 
@@ -450,7 +441,7 @@ class bd:
             self.insertLog(self.currentData, F'CREATE MONTHLY REPORT {m}/{y}')
 
 a = bd()
-#a.insertInvestment('05/11/2020', 'ONEF11', 'FII', 'COMPRA', 145)
+#a.insertInvestment('05/11/2020', 'ONEF11', 'FII', 'PROV RENDIMENTOS', 0.64)
 #a.insertInvestment('05/11/2020', 'TESOURO PRE 2026', 'REND. FIXA', 'COMPRA', 97)
 #a.insertInvestment('06/11/2020', 'VINO11', 'FII', 'COMPRA', 60.20)
 #a.insertInvestment('09/11/2020', 'ARCT11', 'FII', 'COMPRA', 1119.40)

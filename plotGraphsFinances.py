@@ -14,7 +14,7 @@ class plotGraphs:
         topicos = tupleIndices
 
         #GERAR GRAFICO
-        barh(pos, valores, align='center', color='DarkMagenta')
+        barh(pos, valores, align='center', color='Orange')
         yticks(pos, topicos)
 
         #INFORMAÇÕES
