@@ -67,8 +67,8 @@ class months(Frame):
 
         #FILE MENU DE TORNEIRAS
         fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
-        fileMenuTap.add_command(label='Edit Name', command=self.updateNameSpending)
-        fileMenuTap.add_command(label='Edit Value', command='')
+        fileMenuTap.add_command(label='Edit Name', command=  lambda: self.updateNameSpending(self.listboxtTaps.curselection()[0]))
+        fileMenuTap.add_command(label='Edit Value', command= lambda: self.updateValueSpending(self.listboxtTaps.curselection()[0]))
         fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
 
         fileMenuTap.add_separator()
@@ -83,6 +83,8 @@ class months(Frame):
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
 
         fileMenuBox.add_separator()
+        fileMenuBox.add_command(label='Edit Name', command=  lambda: self.updateNameBox(self.listboxBox.curselection()[0]))
+        fileMenuBox.add_command(label='Edit Value', command= lambda: self.updateValueRevenue(self.listboxBox.curselection()[0]))
         fileMenuBox.add_command(label='Update Status', command=self.updateStatusBox)
         fileMenuBox.add_separator()
 
@@ -364,7 +366,7 @@ class months(Frame):
             pass
 
     # ----------------------- SETOR DE UPDATE DE NOME -----------------------
-    def updateNameSpending(self):
+    def updateNameSpending(self, indice):
 
         #CRIAR FUNDO PRETO
         self.createBackGround()
@@ -384,13 +386,20 @@ class months(Frame):
 
         def save():
             #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            indice = self.listboxtTaps.curselection()[0]
             id = int(self.listboxtTaps.get(indice).split(" ")[0])
 
             newItem = comboDespesa.get()
 
             if messagebox.askquestion('Update Name', F'DESEJAR ALTERA NOME ID [{id}]?') == 'yes':
+                
+                #ATUALIZA O NOME NO BANCO DE DADOS
                 self.bancoDados.updateNameSpending(self.currentMonth, id, newItem)
+                
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Atualizado Com Sucesso !')
 
         #BOTAO DE SALVAMENTO
         btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
@@ -412,6 +421,172 @@ class months(Frame):
 
             self.backGround.destroy()
 
+    def updateNameBox(self, indice):
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        lblTitle = Label(text='Update Name Revenue', font=self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle.place(x=280, y=100)
+
+        #TRABALHO
+        lblRevenue = Label(text='Revenue:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblRevenue.place(x=280, y=140)
+
+        comboRevenue = ttk.Combobox(width=12, font= self.fontDefault) 
+
+        comboRevenue['values'] = self.bancoDados.revenues
+        comboRevenue.current(0)
+        comboRevenue.place(x=280, y=160)
+
+        def save():
+            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+            id = int(self.listboxBox.get(indice).split(" ")[0])
+
+            newItem = comboRevenue.get()
+
+            if messagebox.askquestion('Update Name', F'DESEJAR ALTERA NOME ID [{id}]?') == 'yes':
+                
+                #ATUALIZA O NOME NO BANCO DE DADOS
+                self.bancoDados.updateNomeRevenue(self.currentMonth, id, newItem)
+                
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Atualizado Com Sucesso !')
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg=self.bgMenu, fg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+            
+            lblTitle.destroy()
+            lblRevenue.destroy()
+            comboRevenue.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
+
+    # ----------------------- SETOR DE UPDATE DE VALOR -----------------------
+    def updateValueSpending(self, indice):
+
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        lblTitle = Label(text='Update Value Spending', font=self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle.place(x=280, y=100)
+
+        #VALOR
+        lblValor = Label(text='Despesa:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblValor.place(x=280, y=140)
+
+        etValor = Entry(width=12, font= self.fontDefault) 
+        etValor.place(x=280, y=160)
+
+        def save():
+            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+
+            valor = -float(etValor.get())
+
+            if messagebox.askquestion('Update Value', F'DESEJAR ALTERA VALOR ID [{id}]?') == 'yes':
+                
+                #ATUALIZA O VALOR NO BANCO DE DADOS
+                self.bancoDados.updateValorSpending(self.currentMonth, id, valor)
+
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
+
+                #LIMPA O CAMPO DE VALOR
+                etValor.delete(0, END)
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Atualizado Com Sucesso !')
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg=self.bgMenu, fg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+            
+            lblTitle.destroy()
+            lblValor.destroy()
+            etValor.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
+
+    def updateValueRevenue(self, indice):
+
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        lblTitle = Label(text='Update Value Revenue', font=self.fontStyleUpper, bg=self.bgMenu, fg=self.colorTaps)
+        lblTitle.place(x=280, y=100)
+
+        #VALOR
+        lblValor = Label(text='Valor:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorTaps)
+        lblValor.place(x=280, y=140)
+
+        etValor = Entry(width=12, font= self.fontDefault) 
+        etValor.place(x=280, y=160)
+
+        def save():
+            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
+            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+
+            valor = float(etValor.get())
+
+            if messagebox.askquestion('Update Value', F'DESEJAR ALTERA VALOR ID [{id}]?') == 'yes':
+                
+                #ATUALIZA O VALOR NO BANCO DE DADOS
+                self.bancoDados.updateValorRevenue(self.currentMonth, id, valor)
+
+                #ATUALIZA AS TABELAS
+                self.refreshTables()
+
+                #LIMPA O CAMPO DE VALOR
+                etValor.delete(0, END)
+
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Atualizado Com Sucesso !')
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg=self.bgMenu, fg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+            
+            lblTitle.destroy()
+            lblValor.destroy()
+            etValor.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+
+            self.backGround.destroy()
+
+    # ----------------------- SETOR DE UPDATE DE STATUS -----------------------
     def updateStatusBox(self):
 
         try:
@@ -468,7 +643,7 @@ class months(Frame):
 
         comboDespesa = ttk.Combobox(width=12, font= self.fontDefault) 
 
-        comboDespesa['values'] = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'COMBUSTIVEL', 'TRANSPORTE', 'MTL', 'OUTROS'])
+        comboDespesa['values'] = self.bancoDados.spendings
         comboDespesa.current(0)
         comboDespesa.place(x=280, y=220)
 
@@ -577,7 +752,7 @@ class months(Frame):
         lblMes = Label(text='Mês:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorBox)
         lblMes.place(x=280, y=140)
 
-        comboMes = ttk.Combobox(width= 15, font= self.fontDefault) 
+        comboMes = ttk.Combobox(width= 10, font= self.fontDefault) 
 
         comboMes['values'] = tuple([i for i in range(1, 12)])
         comboMes.current(self.month-1)
@@ -599,7 +774,7 @@ class months(Frame):
 
         comboRevenue = ttk.Combobox(width=12, font= self.fontDefault) 
 
-        comboRevenue['values'] = tuple(['TRABALHO', 'PROEJETO', 'DESENV.', 'ESCOLA', 'INVESTIMENTOS', 'OUTROS'])
+        comboRevenue['values'] = self.bancoDados.revenues
         comboRevenue.current(0)
         comboRevenue.place(x=280, y=220)
 

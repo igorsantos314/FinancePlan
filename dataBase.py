@@ -18,7 +18,8 @@ class bd:
         self.months = ['JANEIRO', 'FEVEREIRO', 'MARCO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO']
 
         #TIPO DE GASTOS
-        self.spendings = tuple(['ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'TRANSPORTE', 'MTL', 'OUTROS'])
+        self.spendings = ('ALIMENTACAO', 'COMBUSTIVEL', 'CARTAO -', 'SAUDE', 'TRANSPORTE', 'MTL', 'OUTROS')
+        self.revenues = ('TRABALHO', 'PROEJETO', 'DESENV.', 'ESCOLA', 'INVESTIMENTOS', 'OUTROS')
 
         caminhoAtual = os.getcwd()
 
@@ -204,7 +205,7 @@ class bd:
             #RETORNA O NOVO ID
             return int(gastos[-1][0]) + 1 
     
-    def  getLastIdInvestments(self):
+    def getLastIdInvestments(self):
         
         inves = self.getInvestments()
 
@@ -249,7 +250,7 @@ class bd:
         for i in self.spendings:
 
             #EXIBIR TODOS OS DADOS DE UMA TABELA MES, PELA DATA ESPECIFICA
-            show = f"SELECT valor FROM {self.getNameMonth(m)} WHERE ano = '{y}' AND Item='{i}'"
+            show = f"SELECT valor FROM {self.getNameMonth(m)} WHERE ano = '{y}' AND Item LIKE '%{i}%'"
 
             self.cur.execute(show)
             valores = self.cur.fetchall()
