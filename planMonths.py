@@ -22,7 +22,7 @@ class months(Frame):
         self.gold= 'PaleGoldenrod'
         self.azulClaro = 'PowderBlue'
         self.fontDefault = 'Courier 12'
-        self.fontTad = 'Courier 12 bold'
+        self.fontTad = 'Coureir 12 bold'
 
         #MENU
         self.bgMenu = 'Black'
@@ -45,7 +45,7 @@ class months(Frame):
     def windowSpending(self):
 
         self.windowMain = Tk()
-        self.windowMain.geometry('995x500+10+10')
+        self.windowMain.geometry('1020x500+10+10')
         self.windowMain.resizable(False, False)
         self.windowMain.title('FINANCE')
         self.windowMain['bg'] = 'black'
@@ -67,8 +67,8 @@ class months(Frame):
 
         #FILE MENU DE TORNEIRAS
         fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
-        fileMenuTap.add_command(label='Edit Name', command=  lambda: self.updateNameSpending(self.listboxtTaps.curselection()[0]))
-        fileMenuTap.add_command(label='Edit Value', command= lambda: self.updateValueSpending(self.listboxtTaps.curselection()[0]))
+        fileMenuTap.add_command(label='Edit Name', command=  lambda: self.updateNameSpending())
+        fileMenuTap.add_command(label='Edit Value', command= lambda: self.updateValueSpending())
         fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
 
         fileMenuTap.add_separator()
@@ -83,8 +83,8 @@ class months(Frame):
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
 
         fileMenuBox.add_separator()
-        fileMenuBox.add_command(label='Edit Name', command=  lambda: self.updateNameBox(self.listboxBox.curselection()[0]))
-        fileMenuBox.add_command(label='Edit Value', command= lambda: self.updateValueRevenue(self.listboxBox.curselection()[0]))
+        fileMenuBox.add_command(label='Edit Name', command=  lambda: self.updateNameBox())
+        fileMenuBox.add_command(label='Edit Value', command= lambda: self.updateValueRevenue())
         fileMenuBox.add_command(label='Update Status', command=self.updateStatusBox)
         fileMenuBox.add_separator()
 
@@ -111,21 +111,19 @@ class months(Frame):
 
         #SETAR TITULO DA JANELA PRINCIPAL
         self.lblTitle = Label(text='', font=self.fontStyleUpper, bg='black', fg='white')
-        self.lblTitle.pack(pady=30)
+        self.lblTitle.pack()
         
         self.setTitleWindowMain()
-    
-        #CREATE LISTBOX TORNEIRAS
-        self.setListBoxSpending()
+        
+        #CREATE TREE VIEW DE GASTOS
+        self.setTreeViewSpendings()
 
-        #CREATE LISTBOX DA CAIXA T
-        self.setListBoxT()
-
-        #CREATE LISTBOX DAS CAIXAS E S F
-        #self.setListBoxESF()
+        #CREATE TREE VIEW DE RECEITAS
+        self.setTreeViewRevenue()
 
         #INICIALIZA AS TABELAS
-        self.refreshTables()
+        self.insertSpendingsTreeView()
+        self.insertRevenueTreeView()
 
         #TECLAS DE FUNCOES
         self.windowMain.bind("<F1>", self.keyPressed)
@@ -202,115 +200,144 @@ class months(Frame):
         self.refreshTables()
 
     def refreshTables(self):
+        #LIMPAR TABELAS
+        self.clearAllSpendings()
+        self.clearAllRevenue()
+
         #ATUALIZA A LISTA DE GASTOS
-        self.insertSpendingListBox()
+        self.insertSpendingsTreeView()
 
         #ATUALIZA LISTA DA RECEITA
-        self.insertRevenueListBox()
+        self.insertRevenueTreeView()
     
-    # ----------------------- SETOR DE CRIAÇÃO DOS LISTBOXs -----------------------
-    def setListBoxSpending(self):
-        #LABEL DE GASTOS
-        lblGastos = Label(text='WATER TAP', font=self.fontStyleUpper, bg='black', fg=self.colorTaps)
-        lblGastos.place(x=10, y=80)
-        #lblGastos.grid(column=0, row=1, pady=5, padx=10)
+    # ----------------------- SETOR DE CRIAÇÃO DE TREEVIEW -----------------------
+    def setTreeViewSpendings(self):
 
-        self.listboxtTaps = Listbox(self.windowMain, height=20, width=50, font= self.fontDefault, bg='black', fg='cyan')
-        self.listboxtTaps.pack(side=LEFT, padx=10)
-        #self.listboxtTaps.grid(column=0, row=2, pady=5, padx=10)
+        lblSpendings = Label(text='WATER TAP', font=self.fontStyleUpper, fg=self.colorTaps, bg='black')
+        lblSpendings.place(x=10, y=50)
 
-    def setListBoxT(self):
-        #LABEL DE RECEITA DO MES
-        lblReceita = Label(text='BOX T', font=self.fontStyleUpper, bg='black', fg=self.colorBox)
-        lblReceita.place(x=532, y=80)
+        # Using treeview widget 
+        self.treeViewSpendings = ttk.Treeview(self.windowMain, selectmode ='browse', height=15) 
+        self.treeViewSpendings.place(x=10, y=100)
 
-        self.listboxBox = Listbox(self.windowMain, height=20, width=45, font= self.fontDefault, bg='black', fg=self.colorBox)
-        self.listboxBox.pack(side=RIGHT, padx=10)
-        #self.listboxBox.grid(column=1, row=2, pady=5, padx=5)
+        # Constructing vertical scrollbar 
+        # with treeview 
+        verscrlbar = ttk.Scrollbar(self.windowMain, orient ="vertical", command = self.treeViewSpendings.yview) 
+        verscrlbar.pack(side ='right', fill ='x') 
 
-    # ----------------------- SETOR DE INSERÇÃO NO LITBOX -----------------------
-    def insertRevenueListBox(self, m=None, y=None):
+        # Configuring treeview 
+        self.treeViewSpendings.configure(xscrollcommand = verscrlbar.set) 
 
+        # Defining number of columns 
+        self.treeViewSpendings["columns"] = ("1", "2", "3", "4") 
+
+        # Defining heading 
+        self.treeViewSpendings['show'] = 'headings'
+
+        self.treeViewSpendings.column("1", width = 40, anchor ='c') 
+        self.treeViewSpendings.column("2", width = 200, anchor ='se') 
+        self.treeViewSpendings.column("3", width = 120, anchor ='se') 
+        self.treeViewSpendings.column("4", width = 120, anchor ='se')
+
+        self.treeViewSpendings.heading("1", text ="Id") 
+        self.treeViewSpendings.heading("2", text ="Name") 
+        self.treeViewSpendings.heading("3", text ="Value")
+        self.treeViewSpendings.heading("4", text ="Status")
+
+    def setTreeViewRevenue(self):
+    
+        lblRevenue = Label(text='BOX T', font=self.fontStyleUpper, fg=self.colorBox, bg='black')
+        lblRevenue.place(x=500, y=50)
+
+        # Using treeview widget 
+        self.treeViewRevenue = ttk.Treeview(self.windowMain, selectmode ='browse', height=15) 
+        self.treeViewRevenue.place(x=500, y=100)
+
+        # Constructing vertical scrollbar 
+        # with treeview 
+        verscrlbar = ttk.Scrollbar(self.windowMain, orient ="vertical", command = self.treeViewSpendings.yview) 
+        verscrlbar.pack(side ='right', fill ='x') 
+
+        # Configuring treeview 
+        self.treeViewRevenue.configure(xscrollcommand = verscrlbar.set) 
+
+        # Defining number of columns 
+        self.treeViewRevenue["columns"] = ("1", "2", "3", "4") 
+
+        # Defining heading 
+        self.treeViewRevenue['show'] = 'headings'
+
+        self.treeViewRevenue.column("1", width = 40, anchor ='c') 
+        self.treeViewRevenue.column("2", width = 200, anchor ='se') 
+        self.treeViewRevenue.column("3", width = 120, anchor ='se') 
+        self.treeViewRevenue.column("4", width = 120, anchor ='se')
+
+        self.treeViewRevenue.heading("1", text ="Id") 
+        self.treeViewRevenue.heading("2", text ="Name") 
+        self.treeViewRevenue.heading("3", text ="Value")
+        self.treeViewRevenue.heading("4", text ="Status")
+    
+    # ----------------------- SETOR DE INSERÇÃO DE TREEVIEW -----------------------
+    def insertSpendingsTreeView(self, m=None, y=None):
+        
         #INCIALIZADOR PADRÃO
         if m is None:
             m = self.currentMonth
             y = self.currentYear
 
-        #LIMPAR LISTBOX
-        self.listboxBox.delete(0,'end')
-
-        #INSERIR CABEÇALHO
-        self.listboxBox.insert("end", 'CODE    NAME              VALUE     STATUS')
-        self.listboxBox.insert("end", '-------------------------------------------')
-
-        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
-        listBotT = self.bancoDados.getListBoxTCurrent(m, y)
-
-        for i in listBotT:
-
-            #FORMATAÇÃO DOS DADOS
-            id = "{}".format(i[0])
-            id = "{}{}".format(i[0], " " * (8 - len(id)))
-
-            nome = "{}{}".format(i[3], " " * (18 - len(i[3])))
-
-            valor = "{}".format(i[4])
-            valor = "R${}{}".format(valor, " " * (10 - len(valor)))
-
-            statusPag = "{}{}".format(i[5], " " * (12 - len(i[5])))
-
-            #INSERIR A TUPLA NO FINAL DO LISTBOX
-            self.listboxBox.insert("end", F'{id}{nome}{valor}{statusPag}')
-
-        #SOMA DAS RECEITAS DO MES
-        total = self.bancoDados.getSumBoxT(m, y)
-
-        #INSERIR DESPESAS NO LISTBOX
-        self.listboxBox.insert("end", '-------------------------------------------')
-        space = ' ' * 10
-
-        self.listboxBox.insert("end", F'        TOTAL: {space} R${total}')
-
-    def insertSpendingListBox(self, m=None, y=None):
-
-        #INCIALIZADOR PADRÃO
-        if m is None:
-            m = self.currentMonth
-            y = self.currentYear
-
-        #LIMPAR LISTBOX
-        self.listboxtTaps.delete(0,'end')
-
-        #INSERIR CABEÇALHO
-        self.listboxtTaps.insert("end", 'CODE    NAME                     VALUE     STATUS')
-        self.listboxtTaps.insert("end", '---------------------------------------------------')
+        #LIMPAR TREEVIEW
+        self.clearAllSpendings()
 
         #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
         listSpending = self.bancoDados.getListaGastosMes(m, y)
 
         for i in listSpending:
+            self.treeViewSpendings.insert("", 'end', text ="L1", values =(i[0], i[2], i[3], i[4]))
+    
+    def insertRevenueTreeView(self, m=None, y=None):
+    
+        #INCIALIZADOR PADRÃO
+        if m is None:
+            m = self.currentMonth
+            y = self.currentYear
 
-            #tratamento de dados
-            id = "{}".format(i[0])
-            id = "{}{}".format(i[0], " " * (8 - len(id)))
+        #LIMPAR TREEVIEW
 
-            nome = "{}{}".format(i[2], " " * (25 - len(i[2])))
 
-            valor = "{}".format(i[3])
-            valor = "R${}{}".format(valor, " " * (10 - len(valor)))
+        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
+        listBoxT = self.bancoDados.getListBoxTCurrent(m, y)
 
-            statusPag = i[4]
+        for i in listBoxT:
+            self.treeViewRevenue.insert("", 'end', text ="L1", values =(i[0], i[3], i[4], i[5]))
 
-            self.listboxtTaps.insert("end", F'{id}{nome}{valor}{statusPag}')
+    # ----------------------- SETOR DE LIMPEZA DE TREEVIEW -----------------------
+    def clearAllSpendings(self):
 
-        #SOMA DAS DESPESAS
-        total = self.bancoDados.getGastosMes(m, y)
+        #PEGA TODOS OS FILHOS
+        x = self.treeViewSpendings.get_children()
 
-        #INSERIR DESPESAS NO LISTBOX
-        self.listboxtTaps.insert("end", '---------------------------------------------------')
-        space = ' ' * 17
+        #VERIFICA SE NÃO ESTÁ FAZIA
+        if x != '()':
 
-        self.listboxtTaps.insert("end", F'        TOTAL: {space} R${total}')
+            #VARRE A LISTA
+            for child in x:
+
+                #DELETA O ITEM CORRESPONDENTE
+                self.treeViewSpendings.delete(child)
+
+    def clearAllRevenue(self):
+    
+        #PEGA TODOS OS FILHOS
+        x = self.treeViewRevenue.get_children()
+
+        #VERIFICA SE NÃO ESTÁ FAZIA
+        if x != '()':
+
+            #VARRE A LISTA
+            for child in x:
+
+                #DELETA O ITEM CORRESPONDENTE
+                self.treeViewRevenue.delete(child)
 
     def viewInvestments(self):
 
@@ -353,11 +380,28 @@ class months(Frame):
     def updateStatus(self):
 
         try:
-            indice = self.listboxtTaps.curselection()[0]
-            id = int(self.listboxtTaps.get(indice).split(" ")[0])
-            
+            #PEGA O ID
+            itemSelecionado = self.treeViewSpendings.selection()[0]
+            id = self.treeViewSpendings.item(itemSelecionado, "values")[0]
+
             #ATUALIZAR O STATUS        
             self.bancoDados.updateStatusSpending(self.currentMonth, id)
+
+            #ATUALIZAR TABELAS
+            self.refreshTables()
+        
+        except:
+            pass
+
+    def updateStatusBox(self):
+    
+        try:
+            #PEGA O ID
+            itemSelecionado = self.treeViewRevenue.selection()[0]
+            id = self.treeViewRevenue.item(itemSelecionado, "values")[0]
+            
+            #ATUALIZAR O STATUS        
+            self.bancoDados.updateStatusRevenue(self.currentMonth, id)
 
             #ATUALIZAR TABELAS
             self.refreshTables()
@@ -366,7 +410,7 @@ class months(Frame):
             pass
 
     # ----------------------- SETOR DE UPDATE DE NOME -----------------------
-    def updateNameSpending(self, indice):
+    def updateNameSpending(self):
 
         #CRIAR FUNDO PRETO
         self.createBackGround()
@@ -385,8 +429,9 @@ class months(Frame):
         comboDespesa.place(x=280, y=160)
 
         def save():
-            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            #PEGA O ID
+            itemSelecionado = self.treeViewSpendings.selection()[0]
+            id = self.treeViewSpendings.item(itemSelecionado, "values")[0]
 
             newItem = comboDespesa.get()
 
@@ -421,7 +466,7 @@ class months(Frame):
 
             self.backGround.destroy()
 
-    def updateNameBox(self, indice):
+    def updateNameBox(self):
         #CRIAR FUNDO PRETO
         self.createBackGround()
 
@@ -439,8 +484,9 @@ class months(Frame):
         comboRevenue.place(x=280, y=160)
 
         def save():
-            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            id = int(self.listboxBox.get(indice).split(" ")[0])
+            #PEGA O ID
+            itemSelecionado = self.treeViewRevenue.selection()[0]
+            id = self.treeViewRevenue.item(itemSelecionado, "values")[0]
 
             newItem = comboRevenue.get()
 
@@ -476,7 +522,7 @@ class months(Frame):
             self.backGround.destroy()
 
     # ----------------------- SETOR DE UPDATE DE VALOR -----------------------
-    def updateValueSpending(self, indice):
+    def updateValueSpending(self):
 
         #CRIAR FUNDO PRETO
         self.createBackGround()
@@ -492,8 +538,9 @@ class months(Frame):
         etValor.place(x=280, y=160)
 
         def save():
-            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            #PEGA O ID
+            itemSelecionado = self.treeViewSpendings.selection()[0]
+            id = self.treeViewSpendings.item(itemSelecionado, "values")[0]
 
             valor = -float(etValor.get())
 
@@ -531,7 +578,7 @@ class months(Frame):
 
             self.backGround.destroy()
 
-    def updateValueRevenue(self, indice):
+    def updateValueRevenue(self):
 
         #CRIAR FUNDO PRETO
         self.createBackGround()
@@ -547,8 +594,9 @@ class months(Frame):
         etValor.place(x=280, y=160)
 
         def save():
-            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            #PEGA O ID
+            itemSelecionado = self.treeViewRevenue.selection()[0]
+            id = self.treeViewRevenue.item(itemSelecionado, "values")[0]
 
             valor = float(etValor.get())
 
@@ -585,22 +633,6 @@ class months(Frame):
             btDestroy.destroy()
 
             self.backGround.destroy()
-
-    # ----------------------- SETOR DE UPDATE DE STATUS -----------------------
-    def updateStatusBox(self):
-
-        try:
-            indice = self.listboxBox.curselection()[0]
-            id = int(self.listboxBox.get(indice).split(" ")[0])
-            
-            #ATUALIZAR O STATUS        
-            self.bancoDados.updateStatusRevenue(self.currentMonth, id)
-
-            #ATUALIZAR TABELAS
-            self.refreshTables()
-
-        except:
-            pass
 
     # ----------------------- SETOR DE CRIAÇÃO DE WINDOW ACLOPLADA  -----------------------
     def createBackGround(self):
@@ -875,34 +907,34 @@ class months(Frame):
     def deleteSpending(self):
         
         try:
-            #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-            indice = self.listboxtTaps.curselection()[0]
-            id = int(self.listboxtTaps.get(indice).split(" ")[0])
+            #PEGA O ID
+            itemSelecionado = self.treeViewSpendings.selection()[0]
+            id = self.treeViewSpendings.item(itemSelecionado, "values")[0]
             
             if messagebox.askquestion('', F'Delete Spending ID: {id} ?') == 'yes':
                 
                 #DELETA O ITEM SELECIONADO    
                 self.bancoDados.dropSpending(self.currentMonth, id)
 
-                #ATUALIZAR LISTBOX
-                self.insertSpendingListBox()
+                #ATUALIZAR AS TABELAS
+                self.refreshTables() 
 
         except:
             pass
 
     def deleteRevenue(self):
         
-        #PEGA O ID DO INDICE SELECIONADO NO LISTBOX
-        indice = self.listboxBox.curselection()[0]
-        id = int(self.listboxBox.get(indice).split(" ")[0])
+        #PEGA O ID
+        itemSelecionado = self.treeViewRevenue.selection()[0]
+        id = self.treeViewRevenue.item(itemSelecionado, "values")[0]
         
         if messagebox.askquestion('', F'Delete Revenue ID: {id} ?') == 'yes':
             
             #DELETA O ITEM SELECIONADO    
             self.bancoDados.dropRevenue(self.currentMonth, id)
 
-            #ATUALIZAR LISTBOX
-            self.insertRevenueListBox()                
+            #ATUALIZAR AS TABELAS
+            self.refreshTables()                
     
     # ----------------------- SETOR DE CRIAÇÃO DE RALATORIOS -----------------------
     def createMonthlyReport(self):
