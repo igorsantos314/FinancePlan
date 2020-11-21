@@ -120,6 +120,13 @@ class months(Frame):
 
         #CREATE TREE VIEW DE RECEITAS
         self.setTreeViewRevenue()
+        
+        #CREATE LABEL COM O NOME DE TOTAL BRANCO
+        lblTotalSpendings = Label(text='TOTAL:', font=self.fontStyleUpper, fg='white', bg='black')
+        lblTotalSpendings.place(x=10, y=430)
+
+        lblTotalRevenue = Label(text='TOTAL:', font=self.fontStyleUpper, fg='white', bg='black')
+        lblTotalRevenue.place(x=500, y=430)
 
         #INICIALIZA AS TABELAS
         self.insertSpendingsTreeView()
@@ -244,6 +251,10 @@ class months(Frame):
         self.treeViewSpendings.heading("3", text ="Value")
         self.treeViewSpendings.heading("4", text ="Status")
 
+        #LABEL DE VALOR TOTAL DA RECEITA
+        self.totalSpendings= Label(text='', font=self.fontStyleUpper, fg=self.colorTaps, bg='black' )
+        self.totalSpendings.place(x=80, y=430)
+
     def setTreeViewRevenue(self):
     
         lblRevenue = Label(text='BOX T', font=self.fontStyleUpper, fg=self.colorBox, bg='black')
@@ -276,6 +287,10 @@ class months(Frame):
         self.treeViewRevenue.heading("2", text ="Name") 
         self.treeViewRevenue.heading("3", text ="Value")
         self.treeViewRevenue.heading("4", text ="Status")
+
+        #LABEL DE VALOR TOTAL DA RECEITA
+        self.totalRevenue = Label(text='', font=self.fontStyleUpper, fg=self.colorBox, bg='black' )
+        self.totalRevenue.place(x=570, y=430)
     
     # ----------------------- SETOR DE INSERÇÃO DE TREEVIEW -----------------------
     def insertSpendingsTreeView(self, m=None, y=None):
@@ -293,6 +308,10 @@ class months(Frame):
 
         for i in listSpending:
             self.treeViewSpendings.insert("", 'end', text ="L1", values =(i[0], i[2], i[3], i[4]))
+
+        #SOMA DOS GASTOS
+        total = self.bancoDados.getGastosMes(self.currentMonth, self.currentYear)
+        self.totalSpendings['text'] = F'       R$ {total}'
     
     def insertRevenueTreeView(self, m=None, y=None):
     
@@ -302,13 +321,17 @@ class months(Frame):
             y = self.currentYear
 
         #LIMPAR TREEVIEW
-
+        self.clearAllRevenue()
 
         #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
         listBoxT = self.bancoDados.getListBoxTCurrent(m, y)
 
         for i in listBoxT:
             self.treeViewRevenue.insert("", 'end', text ="L1", values =(i[0], i[3], i[4], i[5]))
+
+        #SOMA DAS RECEITAS RECEBIDAS
+        total = self.bancoDados.getSumBoxT(self.currentMonth, self.currentYear)
+        self.totalRevenue['text'] = F'       R$ {total}'
 
     # ----------------------- SETOR DE LIMPEZA DE TREEVIEW -----------------------
     def clearAllSpendings(self):
