@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from dataBase import bd
 from plotGraphsFinances import plotGraphs
+from backup import backup
 
 class months(Frame):
 
@@ -62,6 +63,7 @@ class months(Frame):
         fileMenuFile.add_separator()
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
         fileMenuFile.add_command(label='Graph Spendings Type', command=self.plotGraphSpendingMonth)
+        fileMenuFile.add_command(label='Backup', command=lambda:backup().createBackup())
 
         menubar.add_cascade(label="File", menu=fileMenuFile)
 

@@ -1,5 +1,6 @@
 from datetime import date
 from os import path, mkdir
+import shutil
 
 class backup:
 
@@ -9,19 +10,22 @@ class backup:
         self.month = date.today().month
         self.year = date.today().year
 
-        self.currentData = F'{self.day}.{self.month}.{self.year}'
+        self.currentData = F'{self.day}-{self.month}-{self.year}'
 
-    def createDirBackup(self):
+        self.origem = 'finance.db'
+        self.destino = F'/media/igor/Backup/{self.currentData}-finance.db'
 
-        if path.exists(self.currentData):
-            print('Backup Exist')
-
-        else:
-            mkdir(F'BACKUP-{self.currentData}')
-
-    
+    def createBackup(self):
         
+        try:
+            #REALIZAR BACKUP PARA UNIDADE REMOVIVEL
+            shutil.copy(self.origem, self.destino)
 
-b = backup()
-b.createDirBackup()
+            print(F'BACKUP DATA: {self.currentData} >> SUCESS !')
+        
+        except:
+            print('ERROR BACKUP !')
+        
+#b = backup()
+
 
