@@ -1,6 +1,7 @@
 from datetime import date
-from os import path, mkdir
+from os import path, mkdir, listdir
 import shutil
+import getpass
 
 class backup:
 
@@ -13,19 +14,23 @@ class backup:
         self.currentData = F'{self.day}-{self.month}-{self.year}'
 
         self.origem = 'finance.db'
-        self.destino = F'/media/igor/Backup/{self.currentData}-finance.db'
-
-    def createBackup(self):
         
+    def createBackup(self, device):
+
+        #PEGA O NOME DO USUARIO ATUAL
+        user = getpass.getuser()
+
+        self.destino = F'/media/{user}/{device}/{self.currentData}-finance.db'
+
         try:
             #REALIZAR BACKUP PARA UNIDADE REMOVIVEL
             shutil.copy(self.origem, self.destino)
-
-            print(F'BACKUP DATA: {self.currentData} >> SUCESS !')
         
         except:
-            print('ERROR BACKUP !')
+            pass
+    
+    def getDevices(self):
+        #LISTA DIR DE DEVICES
+        return listdir('/media/igor/')
         
 #b = backup()
-
-

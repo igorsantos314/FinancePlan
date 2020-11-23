@@ -12,6 +12,7 @@ class months(Frame):
 
         #OBJETO DE BANCO DE DADOS
         self.bancoDados = bd()
+        self.backup = backup()
 
         #OBEJTO DE CRIAÇÃO DE GRAFICOS
         self.graph = plotGraphs()
@@ -63,7 +64,7 @@ class months(Frame):
         fileMenuFile.add_separator()
         fileMenuFile.add_command(label='Monthly Report', command=self.createMonthlyReport)
         fileMenuFile.add_command(label='Graph Spendings Type', command=self.plotGraphSpendingMonth)
-        fileMenuFile.add_command(label='Backup', command=lambda:backup().createBackup())
+        fileMenuFile.add_command(label='Backup', command=self.generateBackup)
 
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
@@ -984,6 +985,109 @@ class months(Frame):
 
         #GERAR GRAFICO
         self.graph.generateGraph(spendings, index, 'SPENDING MONTH', 'VALOR EM R$', 'SPENDINGS')
+
+    # ----------------------- SETOR DE BACKUP -----------------------
+    def generateBackup(self):
+
+        self.windowBackup = Tk()
+        self.windowBackup.geometry('230x450+10+10')
+        self.windowBackup.resizable(False, False)
+        self.windowBackup.title('FINANCE BACKUP')
+        
+        lblBackup = Label(self.windowBackup, text='BACKUP SECTOR', font='Monaco 15 bold')
+        lblBackup.pack()
+
+        lblStatus = Label(self.windowBackup, text='STATUS:')
+        lblStatus.place(x=10, y=35)
+
+        lblStatusUpdate = Label(self.windowBackup, text='---', font='Monaco 10 bold')
+        lblStatusUpdate.place(x=80, y=35)
+
+        # Using treeview widget 
+        self.treeViewBackup = ttk.Treeview(self.windowBackup, selectmode ='browse', height=15) 
+        self.treeViewBackup.place(x=10, y=60)
+
+        # Constructing vertical scrollbar 
+        # with treeview 
+        verscrlbar = ttk.Scrollbar(self.windowBackup, orient ="vertical", command = self.treeViewSpendings.yview) 
+        verscrlbar.pack(side ='right', fill ='x') 
+
+        # Configuring treeview 
+        self.treeViewBackup.configure(xscrollcommand = verscrlbar.set) 
+
+        # Defining number of columns 
+        self.treeViewBackup["columns"] = ("1") 
+
+        # Defining heading 
+        self.treeViewBackup['show'] = 'headings'
+
+        self.treeViewBackup.column("1", width = 200, anchor ='c') 
+        self.treeViewBackup.heading("1", text ="DEVICES")
+
+        #LISTAR DEVICES
+        def listDevices():
+            
+            devices = self.backup.getDevices()
+
+            for i in devices:
+                #INSERE OS DEVICES
+                self.treeViewBackup.insert("", 'end', text ="L1", values =(i))
+
+        #LIMPEZA DE TREEVIEW
+        def clearAllDevices():
+
+            #PEGA TODOS OS FILHOS
+            x = self.treeViewBackup.get_children()
+
+            #VERIFICA SE NÃO ESTÁ FAZIA
+            if x != '()':
+
+                #VARRE A LISTA
+                for child in x:
+
+                    #DELETA O ITEM CORRESPONDENTE
+                    self.treeViewBackup.delete(child)
+
+        def save():
+
+            try:
+                #PEGA O ID
+                itemSelecionado = self.treeViewBackup.selection()[0]
+                nameDevice = self.treeViewBackup.item(itemSelecionado, "values")[0]
+
+                #FUNCAO DE BACKUP
+                self.backup.createBackup(nameDevice)
+
+                #EDITAR LABEL DE STATUS
+                lblStatusUpdate['text'] = '>> SUCESS <<'
+                lblStatusUpdate['fg'] = 'Green'
+
+            except:
+                #EDITAR LABEL DE STATUS
+                lblStatusUpdate['text'] = '*BACKUP ERROR'
+                lblStatusUpdate['fg'] = 'Red'
+
+        def refresh():
+            
+            #ATUALIZA A LISTA DE DISPOSITIVOS
+            clearAllDevices()
+            listDevices()
+
+            #EDITAR LABEL DE STATUS
+            lblStatusUpdate['text'] = '---'
+            lblStatusUpdate['fg'] = 'Black'
+
+        #LISTA TODOS OS DEVICES
+        listDevices()
+
+        #REALIZAR O BACKUP
+        btBackup = Button(self.windowBackup, text='BACKUP', command=save)
+        btBackup.place(x=10, y=390)
+
+        btRefresh = Button(self.windowBackup, text='REFRESH', command=refresh)
+        btRefresh.place(x=120, y=390)
+
+        self.windowBackup.mainloop()
 
 if __name__ == "__main__":
     m = months()
