@@ -736,8 +736,29 @@ class months(Frame):
         def save():
 
             try:
+                nome        = etNome.get()
+                tipoAtv     = etTipoAtivo.get()
+                tipoTrans   = etTransacao.get()
+                valor       = etValor.get()
+                quantAtv    = etQuantAtivos.get()
+                numEstados  = etNumEstados.get()
+                taxaAdm     = etTaxaAdm.get()
+                data = F"{self.day}/{self.month}/{self.year}"
+
+                #TAXA DE ADM
+                self.bancoDados.insertInvestment(data, nome, tipoAtv, tipoTrans, valor, quantAtv, numEstados, taxaAdm)
+
                 #MENSAGEM DE SUCESSO
                 messagebox.showinfo('', 'Adicionado Com Sucesso !')
+
+                #LIMPAR CAMPOS
+                etNome.delete(0, END)
+                etTaxaAdm.delete(0, END)
+                etTipoAtivo.delete(0, END)
+                etNumEstados.delete(0, END)
+                etValor.delete(0, END)
+                etTransacao.delete(0, END)
+                etQuantAtivos.delete(0, END)
 
             except:
                 messagebox.showerror('', 'Ocorreu um Erro !')
