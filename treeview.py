@@ -5,9 +5,22 @@ from tkinter import ttk
 import tkinter as tk 
 from dataBase import bd
 
+
+
 # Creating tkinter window 
 window = tk.Tk() 
 window.resizable(width = 1, height = 1) 
+
+style = ttk.Style(window)
+style.theme_use('clam')
+
+style.configure(    "Treeview",
+                    background="Silver",
+                    foreground='white',
+                    fieldbackground='Silver'
+                    )
+
+style.map("Treeview", background=[('selected', 'orange')])
 
 # Using treeview widget 
 treev2 = ttk.Treeview(window, selectmode ='browse') 

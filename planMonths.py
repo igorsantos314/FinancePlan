@@ -52,6 +52,12 @@ class months(Frame):
         self.windowMain.title('FINANCE')
         self.windowMain['bg'] = 'black'
 
+        #STYLE DO TREEVIEW
+        style = ttk.Style(self.windowMain)
+        style.theme_use('clam')
+        style.configure("Treeview", background="Silver", foreground='white', fieldbackground='Silver')
+        style.map("Treeview", background=[('selected', 'Red')])
+
         #BARRA DE FUNÇÕES
         menubar = Menu(self.windowMain, bg=self.bgMenu, fg='White', font=self.fontDefault)
         myMenu = Menu(menubar, tearoff=0)
@@ -97,7 +103,7 @@ class months(Frame):
 
         #FILE MENU DE INVESTIMENTOS
         fileInvestments = Menu(myMenu, bg=self.bgMenu, fg=self.colorInvestments, font=self.fontDefault)
-        fileInvestments.add_command(label='New Investiment', command='')
+        fileInvestments.add_command(label='New Investiment', command=self.insertInvestment)
         fileInvestments.add_command(label='View Investments', command=self.viewInvestments)
         fileInvestments.add_command(label='Add Dividends', command='')
 
@@ -259,7 +265,7 @@ class months(Frame):
         self.totalSpendings.place(x=80, y=430)
 
     def setTreeViewRevenue(self):
-    
+        
         lblRevenue = Label(text='BOX T', font=self.fontStyleUpper, fg=self.colorBox, bg='black')
         lblRevenue.place(x=500, y=50)
 
@@ -665,6 +671,109 @@ class months(Frame):
 
         self.backGround = Label(bg=self.bgMenu, width=50, height=20)
         self.backGround.place(x=270, y=100)
+
+    # ----------------------- SETOR DE INVESTIMENTOS -----------------------
+    def insertInvestment(self):
+        
+        #CRIAR FUNDO PRETO
+        self.createBackGround()
+
+        tamWidth = 14
+
+        lblTitle = Label(text='Investments', font= self.fontStyleUpper, bg=self.bgMenu, fg=self.colorInvestments)
+        lblTitle.place(x=280, y=100)
+
+        #NOME
+        lblNome = Label(text='Nome Ativo:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblNome.place(x=280, y=140)
+
+        etNome = Entry(width=tamWidth)
+        etNome.place(x=280, y=160)
+
+        #TIPO ATIVO
+        lblTipoAtivo = Label(text='Tipo Ativo:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblTipoAtivo.place(x=430, y=140)
+
+        etTipoAtivo = Entry(width=tamWidth)
+        etTipoAtivo.place(x=430, y=160)
+
+        #TIPO TRANSAÇÃO
+        lblTransacao = Label(text='Transacao:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblTransacao.place(x=280, y=200)
+
+        etTransacao = Entry(width=tamWidth)
+        etTransacao.place(x=280, y=220)
+
+        #VALOR
+        lblValor = Label(text='Valor:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblValor.place(x=430, y=200)
+
+        etValor = Entry(width=tamWidth)
+        etValor.place(x=430, y=220)
+
+        #QUANT ATIVOS
+        lblQuantAtivos = Label(text='Quant Ativos:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblQuantAtivos.place(x=280, y=260)
+
+        etQuantAtivos = Entry(width=tamWidth)
+        etQuantAtivos.place(x=280, y=280)
+
+        #NUMEROS ESTADOS
+        lblNumEstados = Label(text='Num. Estados:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblNumEstados.place(x=430, y=260)
+
+        etNumEstados = Entry(width=tamWidth)
+        etNumEstados.place(x=430, y=280)
+
+        #TAXA ADM
+        lblTaxaAdm = Label(text='Taxa Adm:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblTaxaAdm.place(x=280, y=320)
+
+        etTaxaAdm = Entry(width=tamWidth)
+        etTaxaAdm.place(x=280, y=340)
+
+        #SALVAR TODOS OS DADOS
+        def save():
+
+            try:
+                #MENSAGEM DE SUCESSO
+                messagebox.showinfo('', 'Adicionado Com Sucesso !')
+
+            except:
+                messagebox.showerror('', 'Ocorreu um Erro !')
+
+        #BOTAO DE SALVAMENTO
+        btSave = Button(text='SAVE', bg='MediumSpringGreen', command=save)
+        btSave.place(x=585, y=400)
+
+        #BOTAO PARA DESTRUIR TODOS OS ITENS
+        btDestroy = Button(text='CLOSE', bg='Tomato', command=lambda:destroyItens())
+        btDestroy.place(x=500, y=400)
+
+        #DESTRUI ITENS
+        def destroyItens():
+
+            lblTitle.destroy()
+            lblNome.destroy()
+            lblTaxaAdm.destroy()
+            lblTipoAtivo.destroy()
+            lblNumEstados.destroy()
+            lblValor.destroy()
+            lblTransacao.destroy()
+            lblQuantAtivos.destroy()
+
+            etNome.destroy()
+            etTaxaAdm.destroy()
+            etTipoAtivo.destroy()
+            etNumEstados.destroy()
+            etValor.destroy()
+            etTransacao.destroy()
+            etQuantAtivos.destroy()
+
+            btSave.destroy()
+            btDestroy.destroy()
+            
+            self.backGround.destroy()
 
     # ----------------------- SETOR DE INSERÇAO DE RECEIVES AND SPENDINGS -----------------------
     def insertDespesa(self):

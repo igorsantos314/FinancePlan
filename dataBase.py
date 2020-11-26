@@ -115,12 +115,12 @@ class bd:
         #LOG
         self.insertLog(self.currentData, F'INSERT EM BOX T IN MONTH {m}')
 
-    def insertInvestment(self, data, nome_ativo, tipo_ativo, tipo_transacao, valor):
+    def insertInvestment(self, data, nome_ativo, tipo_ativo, tipo_transacao, valor, quant_ativos, numero_estados, taxa_adm):
         #PEGA O UTLIMO INDICE
         ind = self.getLastIdInvestments()
 
         #INSERIR DADOS NA TABELA MES NA POSICAO M
-        command = f'INSERT INTO INVESTMENTS (Id, data, nome_ativo, tipo_ativo, tipo_transacao, valor) VALUES({ind}, "{data}", "{nome_ativo}", "{tipo_ativo}", "{tipo_transacao}", {valor})'
+        command = f'INSERT INTO INVESTMENTS (Id, data, nome_ativo, tipo_ativo, tipo_transacao, valor, quant_ativos, numero_estados, taxa_adm) VALUES({ind}, "{data}", "{nome_ativo}", "{tipo_ativo}", "{tipo_transacao}", {valor}, {quant_ativos}, {numero_estados}, {taxa_adm})'
 
         self.cur.execute(command)
         self.conection.commit()
