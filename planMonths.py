@@ -104,7 +104,7 @@ class months(Frame):
         #FILE MENU DE INVESTIMENTOS
         fileInvestments = Menu(myMenu, fg=self.colorInvestments, font=self.fontDefault)
         fileInvestments.add_command(label='New Investiment', command=self.insertInvestment)
-        fileInvestments.add_command(label='View Investments', command=self.viewInvestments)
+        fileInvestments.add_command(label='View Investments', command=self.setTreeViewInvestments)
         fileInvestments.add_command(label='Add Dividends', command='')
 
         fileInvestments.add_separator()
@@ -376,39 +376,11 @@ class months(Frame):
                 #DELETA O ITEM CORRESPONDENTE
                 self.treeViewRevenue.delete(child)
 
-    def viewInvestments(self):
-
-        self.listboxInvestments = Listbox(self.windowMain, height=27, width=99, font= self.fontDefault, bg='black', fg=self.colorInvestments)
-        self.listboxInvestments.place(x=0, y=0)
-
-        #INSERIR CABEÇALHO
-        self.listboxInvestments.insert("end", 'CODE    DATE         NAME ACTIVE         TYPE ACTIVE           TRANSACTION TYPE       VALUE')
-        self.listboxInvestments.insert("end", '-------------------------------------------------------------------------------------------------')
-
-        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
-        listInvestments = self.bancoDados.getInvestments()
-
-        for i in listInvestments:
-
-            #FORMATAÇÃO DE STRING
-            id = "{}".format(i[0])
-            id = "{}{}".format(i[0], " " * (8 - len(id)))
-
-            data = "{}{}".format(i[1], " " * (13 - len(i[1])))
-
-            nomeAtivo = "{}{}".format(i[2], " " * (20 - len(i[2])))
-            tipoAtivo = "{}{}".format(i[3], " " * (22 - len(i[3])))
-            tipoTransacao = "{}{}".format(i[4], " " * (23 - len(i[4])))
-
-            valor = F'R${i[5]}'
-
-            self.listboxInvestments.insert("end", F'{id}{data}{nomeAtivo}{tipoAtivo}{tipoTransacao}{valor}')
-
     def closeTableInvestments(self):
 
         #DESTROY LIST BOX DE INVESTIMENTOS CASO ESTEJA ABERTO
         try:
-            self.listboxInvestments.destroy()
+            self.treeViewInvestment.destroy()
 
         except:
             pass
@@ -737,10 +709,18 @@ class months(Frame):
         etTaxaAdm = Entry(width=tamWidth)
         etTaxaAdm.place(x=280, y=340)
 
+        #DATA
+        lblData = Label(text='Data:', font= self.fontDefault, bg=self.bgMenu, fg=self.colorInvestments)
+        lblData.place(x=430, y=320)
+
+        etData = Entry(width=tamWidth)
+        etData.place(x=430, y=340)
+
         #SALVAR TODOS OS DADOS
         def save():
 
             try:
+                #ATRIBUTOS
                 nome        = etNome.get()
                 tipoAtv     = etTipoAtivo.get()
                 tipoTrans   = etTransacao.get()
@@ -748,7 +728,7 @@ class months(Frame):
                 quantAtv    = etQuantAtivos.get()
                 numEstados  = etNumEstados.get()
                 taxaAdm     = etTaxaAdm.get()
-                data = F"{self.day}/{self.month}/{self.year}"
+                data        = etData.get()
 
                 #TAXA DE ADM
                 self.bancoDados.insertInvestment(data, nome, tipoAtv, tipoTrans, valor, quantAtv, numEstados, taxaAdm)
@@ -787,6 +767,7 @@ class months(Frame):
             lblValor.destroy()
             lblTransacao.destroy()
             lblQuantAtivos.destroy()
+            lblData.destroy()
 
             etNome.destroy()
             etTaxaAdm.destroy()
@@ -795,11 +776,65 @@ class months(Frame):
             etValor.destroy()
             etTransacao.destroy()
             etQuantAtivos.destroy()
+            etData.destroy()
 
             btSave.destroy()
             btDestroy.destroy()
             
             self.backGround.destroy()
+
+    def setTreeViewInvestments(self):
+        
+        # Using treeview widget 
+        self.treeViewInvestment = ttk.Treeview(self.windowMain, selectmode ='browse', height=15) 
+        self.treeViewInvestment.pack(pady=10)
+
+        # Constructing vertical scrollbar 
+        # with treeview 
+        #verscrlbar = ttk.Scrollbar(self.windowMain, orient ="vertical", command = self.treeViewSpendings.yview) 
+        #verscrlbar.pack(side ='right', fill ='x') 
+
+        # Configuring treeview 
+        #self.treeViewInvestment.configure(xscrollcommand = verscrlbar.set) 
+
+        # Defining number of columns 
+        self.treeViewInvestment["columns"] = ("1", "2", "3", "4", "5", "6", "7", "8", "9") 
+
+        # Defining heading 
+        self.treeViewInvestment['show'] = 'headings'
+
+        self.treeViewInvestment.column("1", width = 40, anchor ='c') 
+        self.treeViewInvestment.column("2", width = 120, anchor ='se') 
+        self.treeViewInvestment.column("3", width = 120, anchor ='se') 
+        self.treeViewInvestment.column("4", width = 100, anchor ='se')
+        self.treeViewInvestment.column("5", width = 120, anchor ='se')
+        self.treeViewInvestment.column("6", width = 120, anchor ='se')
+        self.treeViewInvestment.column("7", width = 120, anchor ='se')
+        self.treeViewInvestment.column("8", width = 120, anchor ='se')
+        self.treeViewInvestment.column("9", width = 120, anchor ='se')
+
+        self.treeViewInvestment.heading("1", text ="Id") 
+        self.treeViewInvestment.heading("2", text ="Data") 
+        self.treeViewInvestment.heading("3", text ="Nome Ativo")
+        self.treeViewInvestment.heading("4", text ="Tipo Ativo")
+        self.treeViewInvestment.heading("5", text ="Tipo Trans.")
+        self.treeViewInvestment.heading("6", text ="Valor")
+        self.treeViewInvestment.heading("7", text ="Quant. Ativos")
+        self.treeViewInvestment.heading("8", text ="Num. Estados")
+        self.treeViewInvestment.heading("9", text ="Taxa Adm.")
+
+        self.insertInvestmentTreeView()
+
+    def insertInvestmentTreeView(self):
+        #LIMPAR TREEVIEW
+        #self.clearAllRevenue()
+
+        #PEGAR LISTA DE GASTOS DO MÊS CORRENTE
+        invest = self.bancoDados.getInvestments()
+
+        for i in invest:
+            #print(i)
+            self.treeViewInvestment.insert("", 'end', text ="L1", values =(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]))
 
     # ----------------------- SETOR DE INSERÇAO DE RECEIVES AND SPENDINGS -----------------------
     def insertDespesa(self):

@@ -19,12 +19,12 @@ class plotGraphs:
         barh(pos, valores, align='center', color='Orange')
         yticks(pos, topicos)
 
-        #INFORMAÇÕES
+        #ADICIONANDO LEGENDAS
         title(titleGraph)
         xlabel(xlabel_str)
         ylabel(ylabel_str)
 
-        #LINHAS CORTANDO O GRÁFICOs
+        #LINHAS CORTANDO O GRÁFICOS
         grid(True)
 
         #EXIBIR GRAFICO
@@ -57,5 +57,5 @@ class plotGraphs:
         plt.legend()
         plt.show()
 
-p = plotGraphs()
-p.generateGraphYear([randint(0, 1000) for i in range(12)], [randint(0, 1000) for i in range(12)])
+#p = plotGraphs()
+#p.generateGraphYear([randint(0, 1000) for i in range(12)], [randint(0, 1000) for i in range(12)])
