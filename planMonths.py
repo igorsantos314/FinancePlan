@@ -18,7 +18,7 @@ class months(Frame):
         self.graph = plotGraphs()
 
         #DEFAULT
-        self.verdeClaro = 'MediumSpringGreen'
+        self.verdeClaro = 'Green'
         self.fontStyleUpper = 'Courier 20 bold'
         self.tomato = 'Tomato'
         self.gold= 'PaleGoldenrod'
@@ -27,10 +27,10 @@ class months(Frame):
         self.fontTad = 'Coureir 12 bold'
 
         #MENU
-        self.bgMenu = 'Black'
-        self.colorTaps = 'Cyan'
-        self.colorBox = 'SpringGreen'
-        self.colorInvestments = 'Orange'
+        self.bgMenu = 'white'
+        self.colorTaps = 'Red'
+        self.colorBox = 'Green'
+        self.colorInvestments = 'DarkCyan'
 
         #DATA ATUAL
         self.day = date.today().day
@@ -50,7 +50,7 @@ class months(Frame):
         self.windowMain.geometry('1020x500+10+10')
         self.windowMain.resizable(False, False)
         self.windowMain.title('FINANCE')
-        self.windowMain['bg'] = 'black'
+        #self.windowMain['bg'] = 'black'
 
         #STYLE DO TREEVIEW
         style = ttk.Style(self.windowMain)
@@ -59,11 +59,11 @@ class months(Frame):
         style.map("Treeview", background=[('selected', 'Red')])
 
         #BARRA DE FUNÇÕES
-        menubar = Menu(self.windowMain, bg=self.bgMenu, fg='White', font=self.fontDefault)
+        menubar = Menu(self.windowMain, fg='Black', font=self.fontDefault)
         myMenu = Menu(menubar, tearoff=0)
 
         #MENU FILE
-        fileMenuFile = Menu(myMenu, bg=self.bgMenu, fg='White', font=self.fontDefault)
+        fileMenuFile = Menu(myMenu, fg='Black', font=self.fontDefault)
         fileMenuFile.add_command(label='New Spending', command=self.insertDespesa)
         fileMenuFile.add_command(label='New Revenue', command=self.insertRevenue)
 
@@ -75,7 +75,7 @@ class months(Frame):
         menubar.add_cascade(label="File", menu=fileMenuFile)
 
         #FILE MENU DE TORNEIRAS
-        fileMenuTap = Menu(myMenu, bg=self.bgMenu, fg=self.colorTaps, font=self.fontDefault)
+        fileMenuTap = Menu(myMenu, fg=self.colorTaps, font=self.fontDefault)
         fileMenuTap.add_command(label='Edit Name', command=  lambda: self.updateNameSpending())
         fileMenuTap.add_command(label='Edit Value', command= lambda: self.updateValueSpending())
         fileMenuTap.add_command(label='Update Status', command=self.updateStatus)
@@ -86,7 +86,7 @@ class months(Frame):
         menubar.add_cascade(label="Taps", menu=fileMenuTap)
 
         #FILE MENU DE CAIXAS
-        fileMenuBox = Menu(myMenu, bg=self.bgMenu, fg=self.colorBox, font=self.fontDefault)
+        fileMenuBox = Menu(myMenu, fg=self.colorBox, font=self.fontDefault)
         fileMenuBox.add_command(label='Cash Deposit BOX E', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX S', command='')
         fileMenuBox.add_command(label='Cash Deposit BOX F', command='')
@@ -102,7 +102,7 @@ class months(Frame):
         menubar.add_cascade(label="Boxes", menu=fileMenuBox)
 
         #FILE MENU DE INVESTIMENTOS
-        fileInvestments = Menu(myMenu, bg=self.bgMenu, fg=self.colorInvestments, font=self.fontDefault)
+        fileInvestments = Menu(myMenu, fg=self.colorInvestments, font=self.fontDefault)
         fileInvestments.add_command(label='New Investiment', command=self.insertInvestment)
         fileInvestments.add_command(label='View Investments', command=self.viewInvestments)
         fileInvestments.add_command(label='Add Dividends', command='')
@@ -119,7 +119,7 @@ class months(Frame):
         menubar.add_cascade(label="Investments", menu=fileInvestments)
 
         #SETAR TITULO DA JANELA PRINCIPAL
-        self.lblTitle = Label(text='', font=self.fontStyleUpper, bg='black', fg='white')
+        self.lblTitle = Label(text='', font=self.fontStyleUpper)
         self.lblTitle.pack()
         
         self.setTitleWindowMain()
@@ -131,10 +131,10 @@ class months(Frame):
         self.setTreeViewRevenue()
         
         #CREATE LABEL COM O NOME DE TOTAL BRANCO
-        lblTotalSpendings = Label(text='TOTAL:', font=self.fontStyleUpper, fg='white', bg='black')
+        lblTotalSpendings = Label(text='TOTAL:', font=self.fontStyleUpper, fg='Black')
         lblTotalSpendings.place(x=10, y=430)
 
-        lblTotalRevenue = Label(text='TOTAL:', font=self.fontStyleUpper, fg='white', bg='black')
+        lblTotalRevenue = Label(text='TOTAL:', font=self.fontStyleUpper, fg='Black')
         lblTotalRevenue.place(x=500, y=430)
 
         #INICIALIZA AS TABELAS
@@ -148,6 +148,7 @@ class months(Frame):
         self.windowMain.bind("<F5>", self.keyPressed)
         self.windowMain.bind("<F6>", self.keyPressed)
         self.windowMain.bind("<F8>", self.keyPressed)
+        self.windowMain.bind("<Button-3>", self.keyPressed)
 
         #configurar file menu
         self.windowMain.config(menu=menubar)
@@ -157,6 +158,7 @@ class months(Frame):
     # ----------------------- SETOR DE CAPTAÇÃO DE TECLAS DE ATALHO -----------------------
     def keyPressed(self, event):
         l = event.keysym
+        #print(l)
 
         if l == 'F2':
             #ADICIONAR NOVA DESPESA
@@ -176,6 +178,9 @@ class months(Frame):
         elif l == 'F8':
             #AVANÇA UM MES
             self.nextMonth()
+
+        elif l == '??':
+            self.updateStatus()
     
     # ----------------------- SETOR DE DEFINIÇÃO DE TITULO -----------------------
     def setTitleWindowMain(self):
@@ -229,7 +234,7 @@ class months(Frame):
     # ----------------------- SETOR DE CRIAÇÃO DE TREEVIEW -----------------------
     def setTreeViewSpendings(self):
 
-        lblSpendings = Label(text='WATER TAP', font=self.fontStyleUpper, fg=self.colorTaps, bg='black')
+        lblSpendings = Label(text='WATER TAP', font=self.fontStyleUpper, fg=self.colorTaps)
         lblSpendings.place(x=10, y=50)
 
         # Using treeview widget 
@@ -261,12 +266,12 @@ class months(Frame):
         self.treeViewSpendings.heading("4", text ="Status")
 
         #LABEL DE VALOR TOTAL DA RECEITA
-        self.totalSpendings= Label(text='', font=self.fontStyleUpper, fg=self.colorTaps, bg='black' )
+        self.totalSpendings= Label(text='', font=self.fontStyleUpper, fg=self.colorTaps)
         self.totalSpendings.place(x=80, y=430)
 
     def setTreeViewRevenue(self):
         
-        lblRevenue = Label(text='BOX T', font=self.fontStyleUpper, fg=self.colorBox, bg='black')
+        lblRevenue = Label(text='BOX T', font=self.fontStyleUpper, fg=self.colorBox)
         lblRevenue.place(x=500, y=50)
 
         # Using treeview widget 
@@ -298,7 +303,7 @@ class months(Frame):
         self.treeViewRevenue.heading("4", text ="Status")
 
         #LABEL DE VALOR TOTAL DA RECEITA
-        self.totalRevenue = Label(text='', font=self.fontStyleUpper, fg=self.colorBox, bg='black' )
+        self.totalRevenue = Label(text='', font=self.fontStyleUpper, fg=self.colorBox)
         self.totalRevenue.place(x=570, y=430)
     
     # ----------------------- SETOR DE INSERÇÃO DE TREEVIEW -----------------------
@@ -479,7 +484,7 @@ class months(Frame):
                 messagebox.showinfo('', 'Atualizado Com Sucesso !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -534,7 +539,7 @@ class months(Frame):
                 messagebox.showinfo('', 'Atualizado Com Sucesso !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -591,7 +596,7 @@ class months(Frame):
                 messagebox.showinfo('', 'Atualizado Com Sucesso !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -647,7 +652,7 @@ class months(Frame):
                 messagebox.showinfo('', 'Atualizado Com Sucesso !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -747,7 +752,7 @@ class months(Frame):
 
                 #TAXA DE ADM
                 self.bancoDados.insertInvestment(data, nome, tipoAtv, tipoTrans, valor, quantAtv, numEstados, taxaAdm)
-
+                
                 #MENSAGEM DE SUCESSO
                 messagebox.showinfo('', 'Adicionado Com Sucesso !')
 
@@ -764,7 +769,7 @@ class months(Frame):
                 messagebox.showerror('', 'Ocorreu um Erro !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -811,7 +816,7 @@ class months(Frame):
 
         comboMes = ttk.Combobox(width= 10, font= self.fontDefault) 
 
-        comboMes['values'] = tuple([i for i in range(1, 12)])
+        comboMes['values'] = tuple([i for i in range(1, 13)])
         comboMes.current(self.month-1)
         comboMes.place(x=280, y=160)
 
@@ -898,7 +903,7 @@ class months(Frame):
                 messagebox.showerror('', 'Ocorreu um Erro !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
@@ -942,7 +947,7 @@ class months(Frame):
 
         comboMes = ttk.Combobox(width= 10, font= self.fontDefault) 
 
-        comboMes['values'] = tuple([i for i in range(1, 12)])
+        comboMes['values'] = tuple([i for i in range(1, 13)])
         comboMes.current(self.month-1)
         comboMes.place(x=280, y=160)
 
@@ -1029,7 +1034,7 @@ class months(Frame):
                 messagebox.showerror('', 'Ocorreu um Erro !')
 
         #BOTAO DE SALVAMENTO
-        btSave = Button(text='SAVE', bg=self.bgMenu, fg='MediumSpringGreen', command=save)
+        btSave = Button(text='SAVE', bg=self.bgMenu, fg='Green', command=save)
         btSave.place(x=585, y=400)
 
         #BOTAO PARA DESTRUIR TODOS OS ITENS
